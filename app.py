@@ -365,6 +365,19 @@ with right_col:
                 st.info("આ emotion માટે preset songs નથી.")
             
     st.markdown("</div>", unsafe_allow_html=True)
+    
+st.info("Take a photo above to detect your mood, or manually select your mood below. 👇")
+
+        st.markdown("<h3 style='margin-top: 1.5rem;'>🎚️ Manual Mood Selection</h3>", unsafe_allow_html=True)
+
+        selected_emotion = st.selectbox(
+            "Choose your Mood:",
+            options=list(emotion_to_songs.keys()),
+            index=0,
+            format_func=lambda x: x.capitalize(),
+            key="manual_select" # Added key for uniqueness
+        )
+    
 
 # Footer hint
 st.markdown(
