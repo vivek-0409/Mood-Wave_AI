@@ -126,6 +126,11 @@ TEXT = {
         "hi": "आपका इमोशन पहचाना जा रहा है... 🔍",
         "gu": "તમારો ઈમોશન ઓળખાઈ રહ્યો છે... 🔍",
     },
+    "closing_message": { # New closing message
+        "en": "Thank you for visiting MoodWave AI! What's your current vibe? 😄🎶 Try another picture or pick a mood! 💖",
+        "hi": "MoodWave AI पर आने के लिए धन्यवाद! आपका वर्तमान मूड कैसा है? 😄🎶 एक और तस्वीर आज़माएं या मूड चुनें! 💖",
+        "gu": "MoodWave AI ની મુલાકાત લેવા બદલ આભાર! તમારો વર્તમાન વાઇબ કેવો છે? 😄🎶 બીજો ફોટો ટ્રાય કરો અથવા મૂડ પસંદ કરો! 💖",
+    },
 }
 
 # -------------------------------------------------------------
@@ -369,6 +374,20 @@ st.markdown(
     @keyframes langPulse {
         from { box-shadow: 0 0 8px rgba(250,204,21,0.4); }
         to  { box-shadow: 0 0 22px rgba(250,204,21,0.95); }
+    }
+    
+    /* Closing Footer Message (NEW) */
+    .closing-message {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #facc15; 
+        text-shadow: 0 0 10px rgba(250,204,21, 0.4);
+        border: 1px solid rgba(250,204,21, 0.3);
     }
     </style>
     """,
@@ -708,3 +727,18 @@ with col_right:
                 unsafe_allow_html=True,
             )
         st.markdown("</div>", unsafe_allow_html=True)
+
+# ----------------------- CLOSING MESSAGE (Thank You) -----------------------
+st.markdown("---") # Add a separator before the final message
+st.markdown(
+    f"""
+    <div class="closing-message">
+        {L('closing_message')}
+        <br><br>
+        <span style="color: #ec4899; font-size: 1.5rem;">💖</span>
+        <span style="color: #facc15; font-size: 1.5rem;">✨</span>
+        <span style="color: #38bdf8; font-size: 1.5rem;">🎉</span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
