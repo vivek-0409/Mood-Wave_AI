@@ -273,6 +273,15 @@ st.markdown(
         transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
     }
 
+    /* Style for the new top-right buttons (smaller size) */
+    .top-right-creator-btn > button {
+        padding: 0.3rem 0.8rem !important; /* Smaller padding */
+        font-size: 0.75rem !important; /* Smaller font */
+        background: linear-gradient(135deg, #38bdf8, #818cf8) !important; /* Different color gradient for distinction */
+        box-shadow: 0 6px 15px rgba(56, 189, 248, 0.4) !important;
+        /* The global hover animation still applies */
+    }
+
     .stButton>button:hover {
         transform: translateY(-1px) scale(1.02);
         box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
@@ -570,6 +579,21 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+# ----------------------- TOP RIGHT CREATOR BUTTONS (NEW GLOBAL PLACEMENT) -----------------------
+# Use st.link_button inside narrow columns to make them appear small and push them to the right.
+creator_cols = st.columns([8, 1, 1])
+with creator_cols[1]:
+    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
+    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+with creator_cols[2]:
+    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
+    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("---") 
+# ----------------------- END TOP RIGHT CREATOR BUTTONS -----------------------
+
+
 # ----------------------- INPUT METHOD -----------------------
 col_left, col_right = st.columns([1.2, 1])
 
@@ -680,15 +704,7 @@ with col_left:
         st.markdown("</div>", unsafe_allow_html=True)
 
 with col_right:
-    # ----------------------- CREATOR LINKS (NEW MAIN PAGE BUTTONS) -----------------------
-    st.markdown("### 🔗 Connect with Creators")
-    link_cols = st.columns(2)
-    with link_cols[0]:
-        # Using link_button for better visibility on the main page
-        st.link_button("Me (Vivekkumar) 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
-    with link_cols[1]:
-        st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
-    st.markdown("---")
+    # Removed the previous 'Connect with Creators' section from here, as it's now global at the top.
     
     # ----------------------- QUICK MOOD SHORTCUTS -----------------------
     st.markdown(f"### {L('quick_mood_title')}")
