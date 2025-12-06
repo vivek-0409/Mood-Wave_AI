@@ -434,8 +434,11 @@ with col_left:
 
 with col_right:
     # ----------------------- QUICK MOOD SHORTCUTS (NEW FEATURE) -----------------------
-    st.markdown("### ⚡ Quick Mood Shortcuts")
-
+    st.markdown("### 🎧 Quick Mood Shortcuts (Manual Mood Selection) ")
+    st.markdown(
+        "<span class='hint-label'>If camera / detection fails, choose a mood and explore songs manually.</span>",
+        unsafe_allow_html=True
+    )
     quick_cols = st.columns(2)
     moods_row1 = ["happy", "sad", "angry", "neutral"]
     moods_row2 = ["surprise", "fear", "disgust"]
@@ -484,51 +487,3 @@ with col_right:
             )
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ----------------------- MANUAL FALLBACK MODE -----------------------
-st.divider()
-st.subheader("🎚️ Manual Mood Selection")
-st.markdown(
-    "<span class='hint-label'>If camera / detection fails, choose a mood and explore songs manually.</span>",
-    unsafe_allow_html=True
-)
-
-selected_emotion = st.selectbox(
-    "Choose your mood:",
-    options=list(emotion_to_songs.keys()),
-    index=0,
-    format_func=lambda x: x.capitalize()
-)
-
-if st.button("🎧 Show Songs for this Mood", key="manual_button"):
-    emo_icon = emotion_emoji.get(selected_emotion, "🎭")
-
-    st.markdown(
-        f"""
-        <div class="emotion-badge">
-            <span>{emo_icon}</span>
-            <span>{selected_emotion.upper()}</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown("<div class='song-list'>", unsafe_allow_html=True)
-
-    songs = emotion_to_songs.get(selected_emotion, [])
-    for name, url in songs:
-        st.markdown(
-            f"""
-            <div class="song-card">
-                <div class="song-title">
-                    <span>🎵</span>
-                    <span>{name}</span>
-                </div>
-                <div class="song-link">
-                    <a href="{url}" target="_blank">Play on Spotify ↗</a>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown("</div>", unsafe_allow_html=True)
