@@ -20,7 +20,7 @@ except Exception as e:
 st.set_page_config(
     page_title="MoodWave AI",
     page_icon="🎭",
-    layout="white"
+    layout="wide"
 )
 
 # -------------------------------------------------------------
@@ -66,16 +66,6 @@ st.markdown(
         padding: 1rem 1.25rem;
         border: 1px solid rgba(148, 163, 184, 0.25);
         backdrop-filter: blur(12px);
-    }
-
-    /* Title glow */
-    .title-glow {
-        font-size: 2.4rem;
-        font-weight: 800;
-        background: linear-gradient(120deg, #f97316, #22c55e, #38bdf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 20px rgba(248, 250, 252, 0.2);
     }
 
     .subtitle {
