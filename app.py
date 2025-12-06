@@ -201,14 +201,8 @@ st.markdown(
         0% { transform: scale(0.6); opacity: 0; }
         100% { transform: scale(1); opacity: 1; }
     }
-    
-    /* New Keyframes for staggered entry */
-    @keyframes fadeInUp {
-        0% { opacity: 0; transform: translateY(20px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
 
-    /* Song Card List Item (MODIFIED FOR ANIMATION) */
+    /* Song Card List Item */
     .song-card {
         margin-bottom: 0.6rem;
         border-radius: 14px;
@@ -219,10 +213,6 @@ st.markdown(
         justify-content: space-between;
         align-items: center;
         transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease, background 0.18s ease;
-        
-        /* Apply the staggered animation */
-        animation: fadeInUp 0.5s ease-out forwards; 
-        opacity: 0; /* Start hidden */
     }
 
     .song-card:hover {
@@ -316,7 +306,7 @@ st.markdown(
 
     @keyframes pulseGold {
         from { text-shadow: 0 0 6px rgba(250,204,21,0.5); }
-        to  { text-shadow: 0 0 16px rgba(250,204,21,1); }
+        to   { text-shadow: 0 0 16px rgba(250,204,21,1); }
     }
 
     /* Radio options gold color */
@@ -336,7 +326,7 @@ st.markdown(
 
     @keyframes goldSelect {
         from { box-shadow: 0 0 0 rgba(250,204,21,0.0); }
-        to  { box-shadow: 0 0 15px rgba(250,204,21,0.9); }
+        to   { box-shadow: 0 0 15px rgba(250,204,21,0.9); }
     }
 
     /* Camera widget Take Photo button */
@@ -368,7 +358,7 @@ st.markdown(
 
     @keyframes langPulse {
         from { box-shadow: 0 0 8px rgba(250,204,21,0.4); }
-        to  { box-shadow: 0 0 22px rgba(250,204,21,0.95); }
+        to   { box-shadow: 0 0 22px rgba(250,204,21,0.95); }
     }
     </style>
     """,
@@ -502,7 +492,7 @@ with st.sidebar:
     st.markdown(L("sidebar_how_points"))
 
     st.markdown("---")
-    st.markdown(f"👨‍💻 **{L('sidebar_creators')}**\n\n- Me\n- Dhruv")
+    st.markdown(f"👨‍💻 **{L('sidebar_creators')}**\n\n- You\n- Dhruv")
 
 # ----------------------- LANGUAGE BUTTONS (TOP) -----------------------
 lang_cols = st.columns(3)
@@ -632,11 +622,10 @@ with col_left:
         st.markdown("<div class='song-list'>", unsafe_allow_html=True)
 
         songs = emotion_to_songs.get(emo_key, [])
-        for idx, (name, url) in enumerate(songs):
-            delay = idx * 0.15  # Stagger delay for each card
+        for name, url in songs:
             st.markdown(
                 f"""
-                <div class="song-card" style="animation-delay: {delay}s;">
+                <div class="song-card">
                     <div class="song-title">
                         <span>🎵</span>
                         <span>{name}</span>
@@ -690,11 +679,10 @@ with col_right:
 
         st.markdown("<div class='song-list'>", unsafe_allow_html=True)
         songs = emotion_to_songs.get(selected_quick_mood, [])
-        for idx, (name, url) in enumerate(songs):
-            delay = idx * 0.15 # Stagger delay for each card
+        for name, url in songs:
             st.markdown(
                 f"""
-                <div class="song-card" style="animation-delay: {delay}s;">
+                <div class="song-card">
                     <div class="song-title">
                         <span>🎵</span>
                         <span>{name}</span>
