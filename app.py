@@ -5,7 +5,16 @@ import numpy as np
 import time
 
 # -------------------------------------------------------------
-# Streamlit Page Config
+# Streamlit Page Config (optional)
+# -------------------------------------------------------------
+st.set_page_config(
+    page_title="MoodWave AI",
+    page_icon="🎭",
+    layout="wide"
+)
+
+# -------------------------------------------------------------
+# Top small credit text
 # -------------------------------------------------------------
 st.markdown(
     f"""
@@ -16,14 +25,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # -------------------------------------------------------------
 # Dependency Check (Handle DeepFace/TensorFlow loading errors gracefully)
 # -------------------------------------------------------------
 DEEPFACE_AVAILABLE = True
 try:
-    # A quick import test to see if DeepFace is callable
-    import deepface
+    import deepface  # quick import test
 except ImportError:
     DEEPFACE_AVAILABLE = False
 except Exception:
@@ -31,13 +38,11 @@ except Exception:
 
 # -------------------------------------------------------------
 # Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
-# Includes updates for label size and color.
 # -------------------------------------------------------------
 st.markdown(
     """
     <style>
     /* 1. Page and Layout Setup */
-    /* Remove default padding */
     .block-container {
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;
@@ -45,7 +50,6 @@ st.markdown(
         padding-right: 2rem;
     }
     
-    /* Animated gradient background (Applied to Streamlit's main div) */
     [data-testid="stAppViewContainer"] {
         background: linear-gradient(120deg, #1e293b, #0f172a, #020617);
         background-size: 300% 300%;
@@ -58,13 +62,10 @@ st.markdown(
         100% { background-position: 0% 50%; }
     }
     
-    /* Ensure text is white for dark background */
     .stApp {
         color: white;
     }
 
-    /* 2. Custom UI Components */
-    
     /* Title Glow */
     .main-title {
         font-size: 2.4rem;
@@ -101,7 +102,7 @@ st.markdown(
         font-size: 0.9rem;
         font-weight: 600;
         animation: popIn 0.5s ease-out;
-        margin-bottom: 1rem; /* Added margin for spacing */
+        margin-bottom: 1rem;
     }
 
     @keyframes popIn {
@@ -165,26 +166,31 @@ st.markdown(
         filter: brightness(1.05);
     }
     
-    /* ------------------------------------------------------------- */
-    /* UPDATED STYLES for Labels and Hint Text */
-    /* ------------------------------------------------------------- */
-
-    /* Target the labels for Camera Input and Selectbox: "📸 Take a picture" and "Choose your mood:" */
-    /* Streamlit uses data-testid="stWidgetLabel" for widget labels */
+    /* Widget Labels */
     [data-testid="stWidgetLabel"] > label {
-        color: white !important; /* Force color to white */
-        font-size: 1.1rem !important; /* Increased size */
+        color: white !important;
+        font-size: 1.1rem !important;
         font-weight: 700 !important;
     }
 
-    /* Update Hint/Footer Label: "If camera / detection fails..." */
+    /* Hint/Footer Label */
     .hint-label {
-        font-size: 1rem; /* Increased from 0.8rem */
-        color: white; /* Changed from #9ca3af to white */
+        font-size: 1rem;
+        color: white;
         font-weight: 500;
-        opacity: 1; /* Ensure full white visibility */
+        opacity: 1;
     }
 
+    /* Quick mood shortcut badge style */
+    .mood-chip {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(15, 23, 42, 0.7);
+        font-size: 0.85rem;
+        margin: 0.15rem;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -262,6 +268,7 @@ emotion_to_songs = {
         ("Baap Dhamaal – Jignesh Kaviraj", "https://open.spotify.com/album/2MhZPFL3YT4szEQQCZ8BoN"),
     ],
 }
+
 emotion_emoji = {
     "happy": "😄",
     "sad": "😢",
@@ -274,22 +281,58 @@ emotion_emoji = {
 
 # ----------------------- Emotion Detection Function -----------------------
 def detect_emotion(image):
+    """
+    Returns (dominant_emotion, confidence_percent) or (None, None) on failure.
+    """
     if not DEEPFACE_AVAILABLE:
         st.error("DeepFace (or its dependencies) could not be loaded. Please check your environment.")
-        return None
+        return None, None
+
     try:
         result = DeepFace.analyze(
             img_path=image,
             actions=['emotion'],
             enforce_detection=False
         )
-        # DeepFace returns list in version 0.0.96
-        return result[0]['dominant_emotion']
+        # DeepFace returns a list in newer versions
+        r0 = result[0] if isinstance(result, list) else result
+        dominant = r0.get('dominant_emotion', None)
+        confidence = None
+        if dominant and 'emotion' in r0 and isinstance(r0['emotion'], dict):
+            # score for that emotion
+            score = r0['emotion'].get(dominant)
+            if score is not None:
+                confidence = float(score)
+        return dominant, confidence
     except Exception as e:
         st.error(f"Error detecting emotion: {e}")
-        return None
+        return None, None
 
-# ----------------------- UI TITLE -----------------------
+# ----------------------- SIDEBAR (NEW FEATURE) -----------------------
+with st.sidebar:
+    st.markdown("## 🎭 MoodWave AI")
+    st.markdown(
+        "Capture your mood using your **camera or a photo**, and instantly get songs that vibe with your emotion."
+    )
+    if not DEEPFACE_AVAILABLE:
+        st.warning(
+            "⚠ DeepFace not available.\n\nAutomatic emotion detection is disabled. "
+            "Please use **Manual Mood Selection** or Quick Mood Shortcuts."
+        )
+
+    st.markdown("---")
+    st.markdown("### ℹ How it works")
+    st.markdown(
+        "- Take or upload a selfie.\n"
+        "- AI detects your dominant emotion.\n"
+        "- We show you curated songs from **Hindi, English & Gujarati**.\n"
+        "- Or select your mood manually anytime."
+    )
+
+    st.markdown("---")
+    st.markdown("👨‍💻 **Creators**\n\n- You\n- Dhruv")
+
+# ----------------------- MAIN TITLE -----------------------
 st.markdown(
     """
     <div style="text-align:center; margin-bottom: 1.2rem;">
@@ -304,61 +347,142 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ----------------------- CAMERA -----------------------
-uploaded_image = st.camera_input("📸 Take a picture")
+# ----------------------- INPUT METHOD (NEW FEATURE) -----------------------
+col_left, col_right = st.columns([1.2, 1])
 
-detected_emotion = None
+with col_left:
+    input_options = ["📷 Camera", "📁 Upload Photo"]
+    if not DEEPFACE_AVAILABLE:
+        # If DeepFace not available, camera/upload will not be used for detection,
+        # but we still allow upload just to see photo (optional)
+        pass
 
-if uploaded_image is not None:
-    img = Image.open(uploaded_image)
-    st.image(img, caption="Your Photo", use_column_width=True)
+    input_method = st.radio("Choose input method:", input_options, horizontal=True)
 
-    img_np = np.array(img.convert("RGB"))
+    uploaded_image = None
 
-    with st.spinner("Detecting your emotion... 🔍"):
-        time.sleep(1.3)  # smooth animation
-        detected_emotion = detect_emotion(img_np)
+    if input_method == "📷 Camera":
+        uploaded_image = st.camera_input("📸 Take a picture")
+    else:
+        uploaded_file = st.file_uploader("📁 Upload a photo", type=["png", "jpg", "jpeg"])
+        if uploaded_file is not None:
+            uploaded_image = uploaded_file
 
-# ----------------------- AUTO MODE (DeepFace) -----------------------
-if detected_emotion:
-    emo_key = detected_emotion.lower()
-    emo_icon = emotion_emoji.get(emo_key, "🎭")
+    detected_emotion = None
+    detected_confidence = None
 
-    # Emotion chip (using the defined .emotion-badge class)
-    st.markdown(
-        f"""
-        <div class="emotion-badge">
-            <span>{emo_icon}</span>
-            <span>{emo_key.upper()}</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # ----------------------- AUTO MODE (DeepFace) -----------------------
+    if uploaded_image is not None and DEEPFACE_AVAILABLE:
+        img = Image.open(uploaded_image)
+        st.image(img, caption="Your Photo", use_column_width=True)
 
-    st.markdown("<div class='song-list'>", unsafe_allow_html=True)
+        img_np = np.array(img.convert("RGB"))
 
-    songs = emotion_to_songs.get(emo_key, [])
-    for name, url in songs:
-        # Song card (using the defined .song-card class)
+        with st.spinner("Detecting your emotion... 🔍"):
+            time.sleep(1.3)  # smooth animation
+            detected_emotion, detected_confidence = detect_emotion(img_np)
+
+    # show auto-detected songs
+    if detected_emotion:
+        emo_key = detected_emotion.lower()
+        emo_icon = emotion_emoji.get(emo_key, "🎭")
+
+        conf_str = ""
+        if detected_confidence is not None:
+            # DeepFace often gives raw scores; normalizing is tricky.
+            # Assume it's already percentage-like if <= 100.
+            if detected_confidence > 1:
+                conf_str = f"{detected_confidence:.1f}%"
+            else:
+                conf_str = f"{detected_confidence*100:.1f}%"
+        chip_text = f"{emo_key.upper()}"
+        if conf_str:
+            chip_text += f" · {conf_str}"
+
         st.markdown(
             f"""
-            <div class="song-card">
-                <div class="song-title">
-                    <span>🎵</span>
-                    <span>{name}</span>
-                </div>
-                <div class="song-link">
-                    <a href="{url}" target="_blank">Play on Spotify ↗</a>
-                </div>
+            <div class="emotion-badge">
+                <span>{emo_icon}</span>
+                <span>{chip_text}</span>
             </div>
             """,
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
         )
 
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<div class='song-list'>", unsafe_allow_html=True)
+
+        songs = emotion_to_songs.get(emo_key, [])
+        for name, url in songs:
+            st.markdown(
+                f"""
+                <div class="song-card">
+                    <div class="song-title">
+                        <span>🎵</span>
+                        <span>{name}</span>
+                    </div>
+                    <div class="song-link">
+                        <a href="{url}" target="_blank">Play on Spotify ↗</a>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+with col_right:
+    # ----------------------- QUICK MOOD SHORTCUTS (NEW FEATURE) -----------------------
+    st.markdown("### ⚡ Quick Mood Shortcuts")
+
+    quick_cols = st.columns(2)
+    moods_row1 = ["happy", "sad", "angry", "neutral"]
+    moods_row2 = ["surprise", "fear", "disgust"]
+
+    selected_quick_mood = None
+
+    for i, mood in enumerate(moods_row1):
+        with quick_cols[i % 2]:
+            if st.button(f"{emotion_emoji[mood]} {mood.capitalize()}", key=f"quick_{mood}"):
+                selected_quick_mood = mood
+
+    quick_cols2 = st.columns(2)
+    for i, mood in enumerate(moods_row2):
+        with quick_cols2[i % 2]:
+            if st.button(f"{emotion_emoji[mood]} {mood.capitalize()}", key=f"quick2_{mood}"):
+                selected_quick_mood = mood
+
+    if selected_quick_mood:
+        emo_icon = emotion_emoji.get(selected_quick_mood, "🎭")
+        st.markdown(
+            f"""
+            <div class="emotion-badge">
+                <span>{emo_icon}</span>
+                <span>{selected_quick_mood.upper()}</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown("<div class='song-list'>", unsafe_allow_html=True)
+        songs = emotion_to_songs.get(selected_quick_mood, [])
+        for name, url in songs:
+            st.markdown(
+                f"""
+                <div class="song-card">
+                    <div class="song-title">
+                        <span>🎵</span>
+                        <span>{name}</span>
+                    </div>
+                    <div class="song-link">
+                        <a href="{url}" target="_blank">Play on Spotify ↗</a>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # ----------------------- MANUAL FALLBACK MODE -----------------------
 st.divider()
@@ -371,14 +495,13 @@ st.markdown(
 selected_emotion = st.selectbox(
     "Choose your mood:",
     options=list(emotion_to_songs.keys()),
-    index=0, # Changed index to 0 (happy) as it's a good default
+    index=0,
     format_func=lambda x: x.capitalize()
 )
 
-if st.button("🎧 Show Songs for this Mood"):
+if st.button("🎧 Show Songs for this Mood", key="manual_button"):
     emo_icon = emotion_emoji.get(selected_emotion, "🎭")
 
-    # Emotion chip (using the defined .emotion-badge class)
     st.markdown(
         f"""
         <div class="emotion-badge">
@@ -393,7 +516,6 @@ if st.button("🎧 Show Songs for this Mood"):
 
     songs = emotion_to_songs.get(selected_emotion, [])
     for name, url in songs:
-        # Song card (using the defined .song-card class)
         st.markdown(
             f"""
             <div class="song-card">
