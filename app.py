@@ -502,7 +502,7 @@ with st.sidebar:
     st.markdown(L("sidebar_how_points"))
 
     st.markdown("---")
-    st.markdown(f"👨‍💻 **{L('sidebar_creators')}**\n\n- You\n- Dhruv")
+    st.markdown(f"👨‍💻 **{L('sidebar_creators')}**\n\n- Me\n- Dhruv")
 
 # ----------------------- LANGUAGE BUTTONS (TOP) -----------------------
 lang_cols = st.columns(3)
