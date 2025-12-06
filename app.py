@@ -485,6 +485,7 @@ with col_right:
                 """,
                 unsafe_allow_html=True,
             )
-          <p><div></div></p>      
+            <p><div class="main-title">Made by :-</div></p>
+            <div class="main-title">Me and Dhruv</div>
         st.markdown("</div>", unsafe_allow_html=True)
 
