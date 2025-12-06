@@ -1,8 +1,18 @@
 import streamlit as st
-from deepface import DeepFace
 from PIL import Image
 import numpy as np
-import time
+
+# -------------------------------------------------------------
+# Try importing DeepFace safely (so Cloud per crash na thai)
+# -------------------------------------------------------------
+DEEPFACE_AVAILABLE = True
+DEEPFACE_ERROR = None
+
+try:
+    from deepface import DeepFace
+except Exception as e:
+    DEEPFACE_AVAILABLE = False
+    DEEPFACE_ERROR = str(e)
 
 # -------------------------------------------------------------
 # Streamlit Page Config
@@ -14,24 +24,11 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# Dependency Check (Handle DeepFace/TensorFlow loading errors gracefully)
-# -------------------------------------------------------------
-DEEPFACE_AVAILABLE = True
-try:
-    # A quick import test to see if DeepFace is callable
-    import deepface 
-except ImportError:
-    DEEPFACE_AVAILABLE = False
-except Exception:
-    DEEPFACE_AVAILABLE = False
-
-# -------------------------------------------------------------
-# Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
+# Custom CSS – Gradient BG, Animations, Cards, Hover Effects
 # -------------------------------------------------------------
 st.markdown(
     """
     <style>
-    /* 1. Page and Layout Setup */
     /* Remove default padding */
     .block-container {
         padding-top: 1.5rem;
@@ -39,9 +36,9 @@ st.markdown(
         padding-left: 2rem;
         padding-right: 2rem;
     }
-    
-    /* Animated gradient background (Applied to Streamlit's main div) */
-    [data-testid="stAppViewContainer"] {
+
+    /* Animated gradient background */
+    body {
         background: linear-gradient(120deg, #1e293b, #0f172a, #020617);
         background-size: 300% 300%;
         animation: gradientMove 12s ease infinite;
@@ -52,29 +49,8 @@ st.markdown(
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-    
-    /* Ensure text is white for dark background */
-    .stApp {
-        color: white;
-    }
 
-    /* 2. Custom UI Components */
-    
-    /* Title Glow */
-    .main-title {
-        font-size: 2.4rem;
-        font-weight: 800;
-        color: #e5e7eb;
-        text-shadow: 0 0 15px rgba(56, 189, 248, 0.5), 0 0 5px rgba(56, 189, 248, 0.3);
-    }
-    
-    .subtitle {
-        font-size: 0.95rem;
-        color: #e5e7eb;
-        opacity: 0.85;
-    }
-    
-    /* Glass Card Container */
+    /* Glassmorphism card */
     .glass-card {
         background: rgba(15, 23, 42, 0.8);
         border-radius: 20px;
@@ -84,7 +60,31 @@ st.markdown(
         backdrop-filter: blur(18px);
     }
 
-    /* Emotion Badge (Chip) */
+    .glass-soft {
+        background: rgba(15, 23, 42, 0.6);
+        border-radius: 16px;
+        padding: 1rem 1.25rem;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        backdrop-filter: blur(12px);
+    }
+
+    /* Title glow */
+    .title-glow {
+        font-size: 2.4rem;
+        font-weight: 800;
+        background: linear-gradient(120deg, #f97316, #22c55e, #38bdf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(248, 250, 252, 0.2);
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+        color: #e5e7eb;
+        opacity: 0.85;
+    }
+
+    /* Emotion badge */
     .emotion-badge {
         display: inline-flex;
         align-items: center;
@@ -103,7 +103,7 @@ st.markdown(
         100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Song Card List Item */
+    /* Song card */
     .song-card {
         margin-bottom: 0.6rem;
         border-radius: 14px;
@@ -139,7 +139,23 @@ st.markdown(
     .song-link a:hover {
         text-decoration: underline;
     }
-    
+
+    /* Animated pulse icon */
+    .pulse-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8);
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8); }
+        70% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
     /* Fancy button tweak */
     .stButton>button {
         background: linear-gradient(135deg, #f97316, #ec4899);
@@ -158,8 +174,18 @@ st.markdown(
         box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
         filter: brightness(1.05);
     }
-    
-    /* Hint/Footer Labels */
+
+    .stButton>button:active {
+        transform: translateY(0px) scale(0.99);
+        box-shadow: 0 8px 20px rgba(236, 72, 153, 0.55);
+    }
+
+    /* Camera widget card padding fix */
+    [data-testid="stCameraInput"] {
+        margin-top: 0.5rem;
+    }
+
+    /* Small label */
     .hint-label {
         font-size: 0.8rem;
         color: #9ca3af;
@@ -268,16 +294,19 @@ def detect_emotion(image):
             enforce_detection=False
         )
 
-        # DeepFace result handling
-        if isinstance(result, list) and result:
+        # DeepFace 0.0.96 ક્યારેક list આપે, ક્યારેક dict
+        if isinstance(result, list):
             return result[0].get('dominant_emotion')
-        elif isinstance(result, dict) and 'dominant_emotion' in result:
-             return result['dominant_emotion']
-        
+        elif isinstance(result, dict):
+            if 'dominant_emotion' in result:
+                return result['dominant_emotion']
+            elif 'emotion' in result and isinstance(result['emotion'], dict):
+                return result['emotion'].get('dominant')
+
         return None
 
     except Exception as e:
-        # st.error(f"Error detecting emotion: {e}") # Suppressing error here, fallback handles it
+        st.error(f"Error detecting emotion: {e}")
         return None
 
 # -------------------------------------------------------------
@@ -285,9 +314,17 @@ def detect_emotion(image):
 # -------------------------------------------------------------
 # Header
 st.markdown(
-    f"""
-    <div class="main-title">🎭 MoodWave AI</div>
-    <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
+    """
+    <div class="glass-soft" style="margin-bottom: 1rem; display:flex; align-items:center; justify-content:space-between; gap: 0.75rem;">
+        <div>
+            <div class="title-glow">🎭 MoodWave AI</div>
+            <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+            <div class="pulse-dot"></div>
+            <span class="hint-label">Live emotion-powered recommendations</span>
+        </div>
+    </div>
     """,
     unsafe_allow_html=True,
 )
@@ -301,13 +338,8 @@ else:
         "Automatic detection બંધ છે, પણ તમે manual mood select કરીને songs જોઈ શકો છો."
     )
 
-st.markdown("---")
-
 # Main layout – two columns
 left_col, right_col = st.columns([1.1, 1])
-
-uploaded_image = None
-img_np = None
 
 with left_col:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
@@ -322,7 +354,6 @@ with left_col:
 
     if uploaded_image is not None:
         img = Image.open(uploaded_image)
-        img_np = np.array(img.convert("RGB"))
         st.image(img, caption="Your Photo", use_column_width=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -333,7 +364,8 @@ with right_col:
 
     detected_emotion = None
 
-    if uploaded_image is not None and img_np is not None and DEEPFACE_AVAILABLE:
+    if uploaded_image is not None and DEEPFACE_AVAILABLE:
+        img_np = np.array(img.convert("RGB"))
         with st.spinner("🔍 Analyzing your emotion..."):
             detected_emotion = detect_emotion(img_np)
 
@@ -374,17 +406,16 @@ with right_col:
         st.info("કેમેરાથી photo લો અથવા નીચે તમારા mood પ્રમાણે songs જુઓ 👇")
 
         # Manual fallback
-        st.markdown("<h3 style='margin-top: 1.5rem;'>🎚️ Manual Mood Selection</h3>", unsafe_allow_html=True)
+        st.markdown("### 🎚️ Manual Mood Selection")
 
         selected_emotion = st.selectbox(
             "તમારું mood પસંદ કરો:",
             options=list(emotion_to_songs.keys()),
             index=0,
-            format_func=lambda x: x.capitalize(),
-            key="manual_select"
+            format_func=lambda x: x.capitalize()
         )
 
-        if st.button("🎧 Show Songs for this Mood", key="show_manual_songs"):
+        if st.button("🎧 Show Songs for this Mood"):
             emo_icon = emotion_emoji.get(selected_emotion, "🎭")
             st.markdown(
                 f"""
@@ -418,7 +449,7 @@ with right_col:
 # Footer hint
 st.markdown(
     """
-    <div style="margin-top: 2rem; text-align: center;">
+    <div style="margin-top: 1rem; text-align: center;">
         <span class="hint-label">
             Built with ❤️ using Streamlit &amp; DeepFace · Capture → Detect → Vibe 🎶
         </span>
