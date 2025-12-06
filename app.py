@@ -197,7 +197,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-    /* ---------------------- GOLD STYLES FOR INPUT METHOD & CAMERA ---------------------- */
+    #/* ---------------------- GOLD STYLES FOR INPUT METHOD & CAMERA ---------------------- */
 
     /* Gold label for “Choose input method:” */
     .gold-label {
