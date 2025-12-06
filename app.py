@@ -289,9 +289,7 @@ with right_col:
 
     # --- SHOW RESULTS (Auto Detected) ---
         
-detected_emotion:
-        emo_key = detected_emotion.lower()
-        emo_icon = emotion_emoji.get(emo_key, "🎭")
+
 
         st.markdown(
             f"""
