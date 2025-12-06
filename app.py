@@ -140,89 +140,8 @@ TEXT = {
 }
 
 # -------------------------------------------------------------
-# Data: Emotion → Songs
+# Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
 # -------------------------------------------------------------
-emotion_to_songs = {
-    'happy': [
-        ("Aankh Marey – Simmba", "https://open.spotify.com/track/63MvWd6T6yoS7h4AJ4Hjrm"),
-        ("Nashe Si Chadh गई – Befikre", "https://open.spotify.com/track/3uoQUnKEedaeLKxUeVaJwj"),
-        ("Happy – Pharrell Williams", "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH"),
-        ("Can’t Stop the Feeling – Justin Timberlake", "https://open.spotify.com/track/6JV2JOEocMycZxYSZelKcc"),
-        ("Hokaliyo", "https://open.spotify.com/artist/535ascn4f13hFo2kjCodKE"),
-        ("Vaagyo Re Dhol – Hellaro", "https://open.spotify.com/track/3GSyZg9iVdj1WjKzBcLakX"),
-        ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
-    ],
-
-    'sad': [
-        ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
-        ("Channa Mereya – Arijit Singh", "https://open.spotify.com/track/0H2iJVgorRR0ZFgRqGUjUM"),
-        ("Tujhe Kitna Chahne Lage – Kabir Singh", "https://open.spotify.com/track/3dYD57lRAUcMHufyqn9GcI"),
-        ("Let Her Go – Passenger", "https://open.spotify.com/track/0JmiBCpWc1IAc0et7Xm7FL"),
-        ("Someone Like You – Adele", "https://open.spotify.com/track/4kflIGfjdZJW4ot2ioixTB"),
-        ("Mane Yaad Ave – Parthiv Gohil", "https://open.spotify.com/track/1JVAoIO4NtjlejraxemhLh"),
-        ("Chand Ne Kaho – Jigardan Gadhavi", "https://open.spotify.com/track/6ci9DNOBLvA7jVDkMYf5Df"),
-    ],
-
-    'angry': [
-        ("Zinda – Bhaag Milkha Bhaag", "https://open.spotify.com/track/6Zo8diPZAjkUH4rWDMgeiE"),
-        ("Sultan Title Track", "https://open.spotify.com/track/3LJhJG3EsmhCq9bNn047lu"),
-        ("Believer – Imagine Dragons", "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP"),
-        ("Lose Yourself – Eminem", "https://open.spotify.com/track/7MJQ9Nfxzh8LPZ9e9u68Fq"),
-        ("Rag Rag Mein – Kirtidan Gadhvi", "https://open.spotify.com/artist/7odYFkW15De3A7aAuk5x9h"),
-        ("Jode Tame Rahejo – Gujarati Garba", "https://open.spotify.com/track/3ByO0k09IsJPqAGncEVuYQ"),
-    ],
-
-    'surprise': [
-        ("Senorita – ZNMD", "https://open.spotify.com/track/6b8zsc3BxT59Yg62wjt7qA"),
-        ("Odhani – Made In China", "https://open.spotify.com/track/2q0V50aNlI1RQXJyE5HDgD"),
-        ("Uptown Funk – Bruno Mars", "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS"),
-        ("Sugar – Maroon 5", "https://open.spotify.com/track/55h7vJchibLdUkxdlX3fK7"),
-        ("Hokaliyo", "https://open.spotify.com/artist/535ascn4f13hFo2kjCodKE"),
-        ("Halaji Tara Fulwadi", "https://open.spotify.com/track/58kDGOUvK1foT7UGnZYaFQ"),
-        ("Kaka Bapa Na Gaam Nu", "https://open.spotify.com/track/4YigRMdxg9DJNL0rh6V1KK"),
-    ],
-
-    'neutral': [
-        ("Ilahi – Yeh Jawaani Hai Deewani", "https://open.spotify.com/track/0VxgNsSywsjapKGXvzj8RH"),
-        ("Tera Yaar Hoon Main", "https://open.spotify.com/track/3ZCTVFBt2Brf31RLEnCkWJ"),
-        ("Counting Stars – OneRepublic", "https://open.spotify.com/track/2tpWsVSb9UEmDRxAl1zhX1"),
-        ("Perfect – Ed Sheeran", "https://open.spotify.com/track/0tgVpDi06FyKpA1z0VMD4v"),
-        ("Kaka Bapa Na Gaam Nu", "https://open.spotify.com/track/3GmKe3YkJ4YuMZ1GNy9jjW"),
-        ("Gujarati Folk Mashup – RJ Dhvanit", "https://open.spotify.com/artist/7AeKpTtsd8BgYZAAGZ4s48"),
-        ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
-    ],
-
-    'fear': [
-        ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
-        ("Namo Namo – Kedarnath", "https://open.spotify.com/track/5Fx864foKMyZtJbBiwvyBz"),
-        ("Kun Faya Kun – Rockstar", "https://open.spotify.com/track/7F8RNvTQlvbeBLeenycvN6"),
-        ("Demons – Imagine Dragons", "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a"),
-        ("Scared to Be Lonely – Dua Lipa", "https://open.spotify.com/track/3ebXMykcMXOcLeJ9xZ17XH"),
-        ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
-        ("Kadi Aevi Yaad – Rakesh Barot", "https://open.spotify.com/track/748eQN6KCbOO1ylkwHdaXD"),
-    ],
-
-    'disgust': [
-        ("Apna Time Aayega – Gully Boy", "https://open.spotify.com/track/5FLgOuLoVwwUUF7IL36Lux"),
-        ("Sher Aaya Sher – Gully Boy", "https://open.spotify.com/track/7zT92EewVvLfiPyKSTJUT6"),
-        ("Power – Kanye West", "https://open.spotify.com/track/2gZUPNdnz5Y45eiGxpH"),
-        ("Stronger – Kanye West", "https://open.spotify.com/track/0j2T0R9dR9qdJYsB7ciXhf"),
-        ("Helo Mara Dholida", "https://open.spotify.com/track/35tJHVflwKQ8pMYV1QaiJ2"),
-        ("Baap Dhamaal – Jignesh Kaviraj", "https://open.spotify.com/album/2MhZPFL3YT4szEQQCZ8BoN"),
-    ],
-}
-
-emotion_emoji = {
-    "happy": "😄",
-    "sad": "😢",
-    "angry": "😡",
-    "surprise": "😲",
-    "neutral": "😐",
-    "fear": "😨",
-    "disgust": "🤢",
-}
-
-# ----------------------- Custom CSS (Updated for Creator Buttons) -----------------------
 st.markdown(
     """
     <style>
@@ -476,39 +395,6 @@ st.markdown(
         text-shadow: 0 0 10px rgba(250,204,21, 0.4);
         border: 1px solid rgba(250,204,21, 0.3);
     }
-    
-    /* ---------------------- CREATOR BUTTON STYLING (NEW) ---------------------- */
-    .creator-connect-header {
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: #38bdf8; /* Cyan/Blue */
-        text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
-        text-align: right;
-        margin-bottom: 5px; /* Spacing above buttons */
-    }
-    
-    @keyframes creatorPulse {
-        0% { transform: scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
-        50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(56, 189, 248, 0.9); }
-        100% { transform: scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
-    }
-    
-    /* Styling for the small top-right buttons */
-    .top-right-creator-btn .stButton>button {
-        background: linear-gradient(135deg, #38bdf8, #1d4ed8); /* Blue gradient */
-        color: white;
-        border: none;
-        padding: 0.3rem 0.6rem;
-        font-size: 0.8rem;
-        border-radius: 999px;
-        animation: creatorPulse 2s ease-in-out infinite;
-        transition: all 0.2s;
-    }
-
-    .top-right-creator-btn .stButton>button:hover {
-        transform: scale(1.05);
-        filter: brightness(1.2);
-    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -522,7 +408,7 @@ emotion_to_songs = {
         ("Aankh Marey – Simmba", "https://open.spotify.com/track/63MvWd6T6yoS7h4AJ4Hjrm"),
         ("Nashe Si Chadh गई – Befikre", "https://open.spotify.com/track/3uoQUnKEedaeLKxUeVaJwj"),
         ("Happy – Pharrell Williams", "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH"),
-        ("Can’t Stop the Feeling – Justin Timberlake", "https://open.spotify.com/track/6JV2JOEocMycZxYSZelKcc"),
+        ("Can’t Stop the Feeling – Justin Timberlake", "https://open.spotify.com/track/6JV2JOEocMgcZxYSZelKcc"),
         ("Hokaliyo", "https://open.spotify.com/artist/535ascn4f13hFo2kjCodKE"),
         ("Vaagyo Re Dhol – Hellaro", "https://open.spotify.com/track/3GSyZg9iVdj1WjKzBcLakX"),
         ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
@@ -684,10 +570,6 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-
-
-
-
 # ----------------------- INPUT METHOD -----------------------
 col_left, col_right = st.columns([1.2, 1])
 
@@ -798,6 +680,8 @@ with col_left:
         st.markdown("</div>", unsafe_allow_html=True)
 
 with col_right:
+   
+    
     # ----------------------- QUICK MOOD SHORTCUTS -----------------------
     st.markdown(f"### {L('quick_mood_title')}")
     st.markdown(
@@ -856,33 +740,15 @@ with col_right:
         st.markdown("</div>", unsafe_allow_html=True)
 
 
-        # ----------------------- TOP RIGHT CREATOR LINKS (GLOBAL PLACEMENT) -----------------------
-
-# Header spanning the two button columns (aligned to the right)
-st.markdown(
-    f'<div style="text-align: right; margin-bottom: 5px;">'
-    f'<span class="creator-connect-header">🔗 Connect with Creators</span>'
-    f'</div>',
-    unsafe_allow_html=True
-)
-
-# Buttons below the header
-# Adjust column widths to push content to the far right
-creator_btn_cols = st.columns([7, 1.5, 1.5]) 
-
-with creator_btn_cols[1]:
-    # Using the CSS class for the button to apply animation and glow
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-with creator_btn_cols[2]:
-    # Using the CSS class for the button to apply animation and glow
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("---") # Separator before the main columns start
+         # ----------------------- CREATOR LINKS (NEW MAIN PAGE BUTTONS) -----------------------
+    st.markdown("### 🔗 Connect with Creators")
+    link_cols = st.columns(2)
+    with link_cols[0]:
+        # Using link_button for better visibility on the main page
+        st.link_button("Me (Vivekkumar) 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
+    with link_cols[1]:
+        st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
+    st.markdown("---")
 
 # ----------------------- CLOSING MESSAGE (Thank You) -----------------------
 st.markdown("---") # Add a separator before the final message
