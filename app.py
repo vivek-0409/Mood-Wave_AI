@@ -11,6 +11,7 @@ st.markdown(
     f"""
     <p><div class="main-title"> </div></p>
     <p><div class="main-title"> </div></p>
+    <p><div class="main-title"> </div></p>
     <div class="main-title">Made by Me and Dhruv</div>
     """,
     unsafe_allow_html=True,
