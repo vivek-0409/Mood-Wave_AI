@@ -7,9 +7,9 @@ import time
 # -------------------------------------------------------------
 # Streamlit Page Config
 # -------------------------------------------------------------
+# st.set_page_config(layout="wide") # Optional: to use full width
 st.markdown(
     f"""
-    <p>  </p>
     <p><div class="main-title">Made by :-</div></p>
     <div class="main-title">Me and Dhruv</div>
     """,
@@ -31,7 +31,7 @@ except Exception:
 
 # -------------------------------------------------------------
 # Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
-# Includes updates for label size and color.
+# Includes updates for label size and color, and the new 'photo-button'.
 # -------------------------------------------------------------
 st.markdown(
     """
@@ -146,7 +146,7 @@ st.markdown(
         text-decoration: underline;
     }
     
-    /* Fancy button tweak */
+    /* Fancy button tweak for 'Show Songs' button (default) */
     .stButton>button {
         background: linear-gradient(135deg, #f97316, #ec4899);
         color: white;
@@ -163,6 +163,46 @@ st.markdown(
         transform: translateY(-1px) scale(1.02);
         box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
         filter: brightness(1.05);
+    }
+    
+    /* NEW: Dedicated style for the 'Take Photo' button */
+    /* We target a button with a specific data-testid to override the general style */
+    /* Note: In Streamlit, this is tricky. We'll rely on Streamlit's internal element order, 
+       but for reliability, we'll try to find a more specific selector, or for this example,
+       we'll apply a common class via the 'help' parameter and target it with a sibling selector,
+       or just redefine a new button style that will be used. 
+       
+       Let's create a specific container ID for the 'Take Photo' button's container 
+       and target its button inside.
+    */
+    #photo-button-container .stButton>button {
+        /* Base Red Color */
+        background: linear-gradient(135deg, #ef4444, #dc2626); 
+        color: white;
+        border-radius: 999px;
+        border: 2px solid #f87171; /* Light red border for contrast */
+        padding: 0.6rem 1.5rem; /* Slightly larger padding */
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 12px 30px rgba(239, 68, 68, 0.65);
+        transition: all 0.25s ease;
+    }
+
+    /* Animation/Different Colors on Hover/Click */
+    #photo-button-container .stButton>button:hover {
+        /* Animated, Different Colors on Hover/Click Effect */
+        background: linear-gradient(135deg, #f97316, #facc15, #10b981); /* Orange, Yellow, Green */
+        background-size: 300% 300%;
+        animation: photoButtonHover 3s ease infinite;
+        transform: translateY(-4px) scale(1.05); /* Stronger scale up */
+        box-shadow: 0 18px 40px rgba(253, 224, 71, 0.8); /* Yellow glow */
+        border-color: #facc15;
+    }
+    
+    @keyframes photoButtonHover {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
     
     /* ------------------------------------------------------------- */
@@ -288,43 +328,11 @@ def detect_emotion(image):
     except Exception as e:
         st.error(f"Error detecting emotion: {e}")
         return None
-
-# ----------------------- UI TITLE -----------------------
-st.markdown(
-    """
-    <div style="text-align:center; margin-bottom: 1.2rem;">
-        <div class="main-title" style="font-weight: 900;">
-            🎭 MoodWave AI
-        </div>
-        <div class="subtitle" style="font-weight: 700; margin-top: 0.25rem;">
-            <b>Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</b>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# ----------------------- CAMERA -----------------------
-uploaded_image = st.camera_input("📸 Take a picture")
-
-detected_emotion = None
-
-if uploaded_image is not None:
-    img = Image.open(uploaded_image)
-    st.image(img, caption="Your Photo", use_column_width=True)
-
-    img_np = np.array(img.convert("RGB"))
-
-    with st.spinner("Detecting your emotion... 🔍"):
-        time.sleep(1.3)  # smooth animation
-        detected_emotion = detect_emotion(img_np)
-
-# ----------------------- AUTO MODE (DeepFace) -----------------------
-if detected_emotion:
-    emo_key = detected_emotion.lower()
+        
+# ----------------------- Display Songs Function -----------------------
+def display_songs(emotion_key):
+    """Renders the emotion badge and the list of songs for a given emotion key."""
+    emo_key = emotion_key.lower()
     emo_icon = emotion_emoji.get(emo_key, "🎭")
 
     # Emotion chip (using the defined .emotion-badge class)
@@ -360,6 +368,76 @@ if detected_emotion:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+
+# ----------------------- UI TITLE -----------------------
+st.markdown(
+    """
+    <div style="text-align:center; margin-bottom: 1.2rem;">
+        <div class="main-title" style="font-weight: 900;">
+            🎭 MoodWave AI
+        </div>
+        <div class="subtitle" style="font-weight: 700; margin-top: 0.25rem;">
+            <b>Capture your mood & instantly get handpicked songs that vibe with your emotion.</b>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Initialize session state for storing image and detected emotion
+if 'detected_emotion' not in st.session_state:
+    st.session_state.detected_emotion = None
+if 'uploaded_image_bytes' not in st.session_state:
+    st.session_state.uploaded_image_bytes = None
+
+# ----------------------- CAMERA & DETECTION -----------------------
+col1, col2 = st.columns([3, 1])
+
+with col1:
+    # We use the camera_input to capture the image
+    uploaded_image = st.camera_input("📸 Take a picture", key="camera")
+
+with col2:
+    # A dedicated button for processing. We use a container to apply specific CSS.
+    st.markdown("<div id='photo-button-container'>", unsafe_allow_html=True)
+    # The button will only appear if an image has been captured (i.e., uploaded_image is not None)
+    if uploaded_image is not None:
+        # Save the raw bytes to state to check if it's new later
+        if st.session_state.uploaded_image_bytes != uploaded_image.getvalue():
+            st.session_state.uploaded_image_bytes = uploaded_image.getvalue()
+            # Clear previous results when a new photo is taken
+            st.session_state.detected_emotion = None
+            
+        # The button to start the processing
+        if st.button("🚀 Detect Mood", key="detect_mood_btn"):
+            img = Image.open(uploaded_image)
+            st.image(img, caption="Your Photo", use_column_width=True)
+
+            img_np = np.array(img.convert("RGB"))
+
+            with st.spinner("Detecting your emotion... 🔍"):
+                time.sleep(1.3) # smooth animation
+                detected_emotion = detect_emotion(img_np)
+                st.session_state.detected_emotion = detected_emotion
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+# Display the image taken below the button area
+if uploaded_image is not None and st.session_state.detected_emotion is None:
+    img = Image.open(uploaded_image)
+    st.image(img, caption="Photo Ready for Detection", use_column_width=True)
+
+# ----------------------- AUTO MODE (DeepFace) -----------------------
+# This block uses the emotion stored in session state after the button is pressed
+if st.session_state.detected_emotion:
+    detected_emotion = st.session_state.detected_emotion
+    st.divider()
+    st.subheader(f"✨ Auto-Detected Mood:")
+    display_songs(detected_emotion)
+
+
 # ----------------------- MANUAL FALLBACK MODE -----------------------
 st.divider()
 st.subheader("🎚️ Manual Mood Selection")
@@ -371,42 +449,12 @@ st.markdown(
 selected_emotion = st.selectbox(
     "Choose your mood:",
     options=list(emotion_to_songs.keys()),
-    index=0, # Changed index to 0 (happy) as it's a good default
+    index=0, 
+    key="manual_select",
     format_func=lambda x: x.capitalize()
 )
 
-if st.button("🎧 Show Songs for this Mood"):
-    emo_icon = emotion_emoji.get(selected_emotion, "🎭")
-
-    # Emotion chip (using the defined .emotion-badge class)
-    st.markdown(
-        f"""
-        <div class="emotion-badge">
-            <span>{emo_icon}</span>
-            <span>{selected_emotion.upper()}</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown("<div class='song-list'>", unsafe_allow_html=True)
-
-    songs = emotion_to_songs.get(selected_emotion, [])
-    for name, url in songs:
-        # Song card (using the defined .song-card class)
-        st.markdown(
-            f"""
-            <div class="song-card">
-                <div class="song-title">
-                    <span>🎵</span>
-                    <span>{name}</span>
-                </div>
-                <div class="song-link">
-                    <a href="{url}" target="_blank">Play on Spotify ↗</a>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown("</div>", unsafe_allow_html=True)
+if st.button("🎧 Show Songs for this Mood", key="show_songs_btn"):
+    st.divider()
+    st.subheader(f"✨ Manual Mood Selection:")
+    display_songs(selected_emotion)
