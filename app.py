@@ -331,7 +331,7 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("👨‍💻 **Creators**\n\n- You\n- Dhruv")
+    st.markdown("👨‍💻 **Creators**\n\n- Me\n- Dhruv")
 
 # ----------------------- MAIN TITLE -----------------------
 st.markdown(
