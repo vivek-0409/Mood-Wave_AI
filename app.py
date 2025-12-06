@@ -254,180 +254,133 @@ emotion_emoji = {
     "disgust": "🤢",
 }
 
-# -------------------------------------------------------------
-# Emotion detection helper
-# -------------------------------------------------------------
+# ----------------------- Emotion Detection Function -----------------------
 def detect_emotion(image):
-    """Use DeepFace if available, otherwise return None."""
-    if not DEEPFACE_AVAILABLE:
-        return None
-
     try:
         result = DeepFace.analyze(
             img_path=image,
             actions=['emotion'],
             enforce_detection=False
         )
-
-        # DeepFace 0.0.96 ક્યારેક list આપે, ક્યારેક dict
-        if isinstance(result, list):
-            return result[0].get('dominant_emotion')
-        elif isinstance(result, dict):
-            if 'dominant_emotion' in result:
-                return result['dominant_emotion']
-            elif 'emotion' in result and isinstance(result['emotion'], dict):
-                return result['emotion'].get('dominant')
-
-        return None
-
+        # DeepFace returns list in version 0.0.96
+        return result[0]['dominant_emotion']
     except Exception as e:
         st.error(f"Error detecting emotion: {e}")
         return None
 
-# -------------------------------------------------------------
-# UI Layout
-# -------------------------------------------------------------
-# Header
+# ----------------------- UI TITLE -----------------------
 st.markdown(
     """
-    <div style="text-align:center; margin-bottom: 1.2rem;">
-        <div class="main-title" style="font-weight: 900;">
-            🎭 MoodWave AI
-        </div>
-        <div class="subtitle" style="font-weight: 700; margin-top: 0.25rem;">
-            <b>Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</b>
-        </div>
+    <div class='title-animate'>
+        🎭 MoodWave AI – Emotion Based Song Recommender
+    </div>
+    <div class="subtitle">
+        Capture your selfie, let AI read your mood, and enjoy songs that match your vibes.
     </div>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
-# Status about DeepFace
-if DEEPFACE_AVAILABLE:
-    st.success("✅ DeepFace loaded – automatic emotion detection is active.")
-else:
-    st.warning(
-        "⚠️ DeepFace / TensorFlow આ environment માં load થતું નથી.\n\n"
-        "Automatic detection બંધ છે, પણ તમે manual mood select કરીને songs જોઈ શકો છો."
-    )
+st.markdown("<br>", unsafe_allow_html=True)
 
-# Main layout – two columns
-left_col, right_col = st.columns([1.1, 1])
+# ----------------------- CAMERA -----------------------
+uploaded_image = st.camera_input("📸 Take a picture")
 
-with left_col:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.subheader("📸 Capture Your Mood")
+detected_emotion = None
 
+if uploaded_image is not None:
+    img = Image.open(uploaded_image)
+    st.image(img, caption="Your Photo", use_column_width=True)
+
+    img_np = np.array(img.convert("RGB"))
+
+    with st.spinner("Detecting your emotion... 🔍"):
+        time.sleep(1.3)  # smooth animation
+        detected_emotion = detect_emotion(img_np)
+
+# ----------------------- AUTO MODE (DeepFace) -----------------------
+if detected_emotion:
+    emo_key = detected_emotion.lower()
+    emo_icon = emotion_emoji.get(emo_key, "🎭")
+
+    # Emotion chip
     st.markdown(
-        '<span class="hint-label">Tip: Good lighting & clear face → better emotion detection.</span>',
-        unsafe_allow_html=True,
+        f"""
+        <div class="emotion-chip chip-{emo_key}">
+            <span>{emo_icon}</span>
+            <span>{emo_key.upper()}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    uploaded_image = st.camera_input("")
+    st.markdown("<div class='song-list'>", unsafe_allow_html=True)
 
-    if uploaded_image is not None:
-        img = Image.open(uploaded_image)
-        st.image(img, caption="Your Photo", use_column_width=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-with right_col:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.subheader("🎧 Your Mood Playlist")
-
-    detected_emotion = None
-
-    if uploaded_image is not None and DEEPFACE_AVAILABLE:
-        img_np = np.array(img.convert("RGB"))
-        with st.spinner("🔍 Analyzing your emotion..."):
-            detected_emotion = detect_emotion(img_np)
-
-    # If auto detected
-    if detected_emotion:
-        emo_key = detected_emotion.lower()
-        emo_icon = emotion_emoji.get(emo_key, "🎭")
-
+    songs = emotion_to_songs.get(emo_key, [])
+    for name, url in songs:
         st.markdown(
             f"""
-            <div style="margin-bottom:0.8rem;">
-                <span class="emotion-badge">
-                    <span>{emo_icon}</span>
-                    <span>{detected_emotion.upper()}</span>
-                </span>
+            <div class="song-pill song-{emo_key}">
+                <div class="song-left">
+                    <span>🎵</span>
+                    <span>{name}</span>
+                </div>
+                <div class="song-right">
+                    <a href="{url}" target="_blank">Play on Spotify ↗</a>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        songs = emotion_to_songs.get(emo_key, [])
-        if songs:
-            for name, url in songs:
-                st.markdown(
-                    f"""
-                    <div class="song-card">
-                        <div class="song-title">🎵 {name}</div>
-                        <div class="song-link"><a href="{url}" target="_blank">Play on Spotify ↗</a></div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-        else:
-            st.info("આ emotion માટે preset songs નથી. Try another mood 🙂")
-
-    # If no emotion detected (image missing / DeepFace not available / fail)
-    else:
-        st.info("કેમેરાથી photo લો અથવા નીચે તમારા mood પ્રમાણે songs જુઓ 👇")
-
-        # Manual fallback
-        st.markdown("### 🎚️ Manual Mood Selection")
-
-        selected_emotion = st.selectbox(
-            "તમારું mood પસંદ કરો:",
-            options=list(emotion_to_songs.keys()),
-            index=0,
-            format_func=lambda x: x.capitalize()
-        )
-
-        if st.button("🎧 Show Songs for this Mood"):
-            emo_icon = emotion_emoji.get(selected_emotion, "🎭")
-            st.markdown(
-                f"""
-                <div style="margin-bottom:0.8rem;">
-                    <span class="emotion-badge">
-                        <span>{emo_icon}</span>
-                        <span>{selected_emotion.upper()}</span>
-                    </span>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            songs = emotion_to_songs.get(selected_emotion, [])
-            if songs:
-                for name, url in songs:
-                    st.markdown(
-                        f"""
-                        <div class="song-card">
-                            <div class="song-title">🎵 {name}</div>
-                            <div class="song-link"><a href="{url}" target="_blank">Play on Spotify ↗</a></div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-            else:
-                st.info("આ emotion માટે preset songs નથી.")
-
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Footer hint
+# ----------------------- MANUAL FALLBACK MODE -----------------------
+st.divider()
+st.subheader("🎚️ Manual Mood Selection (Fallback Mode)")
 st.markdown(
-    """
-    <div style="margin-top: 1rem; text-align: center;">
-        <span class="hint-label">
-            Built with ❤️ using Streamlit &amp; DeepFace · Capture → Detect → Vibe 🎶
-        </span>
-    </div>
-    """,
-    unsafe_allow_html=True,
+    "<span class='hint-label'>If camera / detection fails, choose a mood and explore songs manually.</span>",
+    unsafe_allow_html=True
 )
+
+selected_emotion = st.selectbox(
+    "તમારું mood પસંદ કરો:",
+    options=list(emotion_to_songs.keys()),
+    index=0,
+    format_func=lambda x: x.capitalize()
+)
+
+if st.button("🎧 Show Songs for this Mood"):
+    emo_icon = emotion_emoji.get(selected_emotion, "🎭")
+
+    st.markdown(
+        f"""
+        <div class="emotion-chip chip-{selected_emotion}">
+            <span>{emo_icon}</span>
+            <span>{selected_emotion.upper()}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<div class='song-list'>", unsafe_allow_html=True)
+
+    songs = emotion_to_songs.get(selected_emotion, [])
+    for name, url in songs:
+        st.markdown(
+            f"""
+            <div class="song-pill song-{selected_emotion}">
+                <div class="song-left">
+                    <span>🎵</span>
+                    <span>{name}</span>
+                </div>
+                <div class="song-right">
+                    <a href="{url}" target="_blank">Play on Spotify ↗</a>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
