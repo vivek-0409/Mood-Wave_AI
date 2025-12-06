@@ -197,7 +197,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
     /* ---------------------- GOLD STYLES FOR INPUT METHOD & CAMERA ---------------------- */
 
     /* Gold label for “Choose input method:” */
@@ -427,18 +426,7 @@ with col_left:
         # but we still allow upload just to see photo (optional)
         pass
 
-        st.markdown(
-        "<div class='gold-label'>Choose input method:</div>",
-        unsafe_allow_html=True
-        )
-
-    input_method = st.radio(
-        "",
-        input_options,
-        horizontal=True,
-        label_visibility="collapsed"
-        )
-
+    input_method = st.radio("Choose input method:", input_options, horizontal=True)
 
     uploaded_image = None
 
