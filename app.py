@@ -138,7 +138,7 @@ emotion_style = {
     "neutral": {"color": "#9CA3AF", "emoji": "😐"},
     "fear":    {"color": "#A855F7", "emoji": "😨"},
     "disgust": {"color": "#22C55E", "emoji": "🤢"},
-    
+}
 if DEEPFACE_AVAILABLE:
     uploaded_image = st.camera_input("📸 Take a picture")
 
