@@ -80,8 +80,76 @@ st.markdown(
         color: #e5e7eb;
         opacity: 0.85;
     }
-    
-    /* Glass Card Container */
+
+    /* ---------------- GOLD LABEL + ANIMATION ---------------- */
+
+    /* All widget labels (like "Choose input method:", "📸 Take a picture") */
+    [data-testid="stWidgetLabel"] > label {
+        color: #facc15 !important;   /* gold */
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px rgba(250, 204, 21, 0.65);
+        transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.15s ease;
+    }
+
+    /* Click / tap animation on label */
+    [data-testid="stWidgetLabel"] > label:active {
+        color: #fde047 !important;  /* lighter gold */
+        text-shadow: 0 0 18px rgba(250, 250, 110, 0.9);
+        transform: scale(0.97);
+    }
+
+    /* ---------------- RADIO OPTIONS (📷 Camera / 📁 Upload Photo) ---------------- */
+
+    /* Base gold for radio option text */
+    [data-testid="stRadio"] div[role="radiogroup"] > label > div {
+        color: #facc15;
+        font-weight: 600;
+        transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.15s ease;
+    }
+
+    /* On hover */
+    [data-testid="stRadio"] div[role="radiogroup"] > label:hover > div {
+        text-shadow: 0 0 12px rgba(250, 204, 21, 0.7);
+        transform: translateY(-1px);
+    }
+
+    /* When radio is focused (clicked/selected) – small glow */
+    [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) > div {
+        color: #fde047;
+        text-shadow: 0 0 16px rgba(250, 250, 110, 0.95);
+        transform: scale(1.01);
+    }
+
+    /* ---------------- CAMERA "TAKE PHOTO" BUTTON ---------------- */
+
+    /* Container for camera widget – target its button */
+    [data-testid="stCameraInput"] button {
+        color: #facc15 !important;  /* gold text */
+        font-weight: 700;
+        border-radius: 999px;
+        border: 1px solid rgba(250, 204, 21, 0.6);
+        background: rgba(15, 23, 42, 0.9);
+        box-shadow: 0 0 10px rgba(250, 204, 21, 0.35);
+        transition: color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease, background 0.25s ease;
+    }
+
+    /* Hover animation for Take Photo button */
+    [data-testid="stCameraInput"] button:hover {
+        box-shadow: 0 0 18px rgba(250, 204, 21, 0.7);
+        background: rgba(30, 64, 175, 0.9);
+        transform: translateY(-1px) scale(1.01);
+    }
+
+    /* Click (active) animation for Take Photo button */
+    [data-testid="stCameraInput"] button:active {
+        color: #fef9c3 !important;  /* very light gold */
+        transform: scale(0.97);
+        box-shadow: 0 0 22px rgba(250, 250, 110, 0.9);
+    }
+
+    /* Other styles you already had (song cards, etc.) */
+
     .glass-card {
         background: rgba(15, 23, 42, 0.8);
         border-radius: 20px;
@@ -91,7 +159,6 @@ st.markdown(
         backdrop-filter: blur(18px);
     }
 
-    /* Emotion Badge (Chip) */
     .emotion-badge {
         display: inline-flex;
         align-items: center;
@@ -111,7 +178,6 @@ st.markdown(
         100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Song Card List Item */
     .song-card {
         margin-bottom: 0.6rem;
         border-radius: 14px;
@@ -147,34 +213,7 @@ st.markdown(
     .song-link a:hover {
         text-decoration: underline;
     }
-    
-    /* Fancy button tweak */
-    .stButton>button {
-        background: linear-gradient(135deg, #f97316, #ec4899);
-        color: white;
-        border-radius: 999px;
-        border: none;
-        padding: 0.45rem 1.3rem;
-        font-weight: 600;
-        font-size: 0.9rem;
-        box-shadow: 0 10px 25px rgba(236, 72, 153, 0.55);
-        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-    }
 
-    .stButton>button:hover {
-        transform: translateY(-1px) scale(1.02);
-        box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
-        filter: brightness(1.05);
-    }
-    
-    /* Widget Labels */
-    [data-testid="stWidgetLabel"] > label {
-        color: white !important;
-        font-size: 1.1rem !important;
-        font-weight: 700 !important;
-    }
-
-    /* Hint/Footer Label */
     .hint-label {
         font-size: 1rem;
         color: white;
@@ -182,16 +221,6 @@ st.markdown(
         opacity: 1;
     }
 
-    /* Quick mood shortcut badge style */
-    .mood-chip {
-        display: inline-block;
-        padding: 0.4rem 0.9rem;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.6);
-        background: rgba(15, 23, 42, 0.7);
-        font-size: 0.85rem;
-        margin: 0.15rem;
-    }
     </style>
     """,
     unsafe_allow_html=True,
