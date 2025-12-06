@@ -168,7 +168,7 @@ st.markdown(
     /* UPDATED STYLES for Labels and Hint Text */
     /* ------------------------------------------------------------- */
 
-    /* Target the labels for Camera Input and Selectbox: "📸 Take a picture" and "Choose your mood:" */
+    /* "<span class='hint-label'> "📸 Take a picture" and "Choose your mood:"</span>", */
     /* Streamlit uses data-testid="stWidgetLabel" for widget labels */
     [data-testid="stWidgetLabel"] > label {
         color: white !important; /* Force color to white */
