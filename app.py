@@ -197,72 +197,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-    #/* ---------------------- GOLD STYLES FOR INPUT METHOD & CAMERA ---------------------- */
 
-    /* Gold label for “Choose input method:” */
-    .gold-label {
-        color: #facc15;
-        font-weight: 800;
-        font-size: 1.1rem;
-        text-shadow: 0 0 10px rgba(250,204,21,0.6);
-        margin-bottom: 0.3rem;
-    }
-
-    /* Gold animated label for “📸 Take a picture” */
-    .camera-gold {
-        color: #facc15;
-        font-weight: 900;
-        font-size: 1.15rem;
-        text-shadow: 0 0 12px rgba(250,204,21,0.8);
-        animation: pulseGold 1.5s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulseGold {
-        from { text-shadow: 0 0 6px rgba(250,204,21,0.5); }
-        to   { text-shadow: 0 0 16px rgba(250,204,21,1); }
-    }
-
-    /* Radio options gold color */
-    [data-testid="stRadio"] label {
-        color: #facc15 !important;
-        font-weight: 700 !important;
-    }
-
-    /* Selected mood option glow */
-    [data-testid="stRadio"] div[role="radiogroup"] > div:has(input:checked) {
-        background: rgba(250,204,21,0.18);
-        border-radius: 12px;
-        padding: 3px 10px;
-        box-shadow: 0 0 15px rgba(250,204,21,0.7);
-        animation: goldSelect 0.2s ease-out;
-    }
-
-    @keyframes goldSelect {
-        from { box-shadow: 0 0 0 rgba(250,204,21,0.0); }
-        to   { box-shadow: 0 0 15px rgba(250,204,21,0.9); }
-    }
-
-    /* Camera widget Take Photo button */
-    [data-testid="stCameraInput"] button {
-        color: #facc15 !important;
-        border: 1px solid #facc15 !important;
-        background: transparent !important;
-        font-weight: 800 !important;
-        transition: 0.2s;
-    }
-
-    [data-testid="stCameraInput"] button:hover {
-        background: rgba(250,204,21,0.18) !important;
-        transform: scale(1.03);
-        box-shadow: 0 0 20px rgba(250,204,21,0.75);
-    }
-
-    [data-testid="stCameraInput"] button:active {
-        transform: scale(0.96);
-        box-shadow: 0 0 28px rgba(250,204,21,1);
-    }
-
-
+    
 # -------------------------------------------------------------
 # Data: Emotion → Songs
 # -------------------------------------------------------------
