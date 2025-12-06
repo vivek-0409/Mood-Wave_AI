@@ -329,7 +329,7 @@ else:
     )
 
 # Main layout – two columns
-left_col, right_col = st.columns([1.1, 1])
+
 
 with left_col:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
@@ -389,17 +389,17 @@ with right_col:
                     unsafe_allow_html=True,
                 )
         else:
-            st.info("આ emotion માટે preset songs નથી. Try another mood 🙂")
+            st.info("There are no Preset songs for this Emotion.. Try another mood 🙂")
 
     # If no emotion detected (image missing / DeepFace not available / fail)
     else:
-        st.info("કેમેરાથી photo લો અથવા નીચે તમારા mood પ્રમાણે songs જુઓ 👇")
+        st.info("Take a Photo with the Camera or watch the Songs below According to Your Mood 👇👇")
 
         # Manual fallback
         st.markdown("### 🎚️ Manual Mood Selection")
 
         selected_emotion = st.selectbox(
-            "તમારું mood પસંદ કરો:",
+            "Choose your Mood:",
             options=list(emotion_to_songs.keys()),
             index=0,
             format_func=lambda x: x.capitalize()
@@ -441,7 +441,7 @@ st.markdown(
     """
     <div style="margin-top: 1rem; text-align: center;">
         <span class="hint-label">
-            Built with ❤️ using Streamlit &amp; DeepFace · Capture → Detect → Vibe 🎶
+            Built with ME and Dhruv Dave using Streamlit &amp; DeepFace · Capture → Detect → Vibe 🎶
         </span>
     </div>
     """,
