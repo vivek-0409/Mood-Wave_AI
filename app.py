@@ -7,6 +7,14 @@ import time
 # -------------------------------------------------------------
 # Streamlit Page Config (optional)
 # -------------------------------------------------------------
+st.markdown(
+    f"""
+    <p>  </p>
+    <p><div class="main-title">  </div></p>
+    <div class="main-title">  </div>
+    """,
+    unsafe_allow_html=True,
+)
 st.set_page_config(
     page_title=" MoodWave AI",
     page_icon="🎭",
