@@ -7,13 +7,6 @@ import time
 # -------------------------------------------------------------
 # Streamlit Page Config
 # -------------------------------------------------------------
-st.markdown(
-    f"""
-    <div class="main-title">🎭 MoodWave AI</div>
-    <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
-    """,
-    unsafe_allow_html=True,
-)
 
 
 # -------------------------------------------------------------
