@@ -5,7 +5,16 @@ import numpy as np
 import time
 
 # -------------------------------------------------------------
-# Streamlit Page Config (optional)
+# Streamlit Page Config (should be before any other Streamlit call)
+# -------------------------------------------------------------
+st.set_page_config(
+    page_title="MoodWave AI",
+    page_icon="🎭",
+    layout="wide"
+)
+
+# -------------------------------------------------------------
+# Top small (empty) title block – you can remove if not needed
 # -------------------------------------------------------------
 st.markdown(
     f"""
@@ -14,12 +23,6 @@ st.markdown(
     <div class="main-title">  </div>
     """,
     unsafe_allow_html=True,
-)
-
-st.set_page_config(
-    page_title=" MoodWave AI",
-    page_icon="🎭",
-    layout="wide"
 )
 
 # -------------------------------------------------------------
@@ -32,6 +35,98 @@ except ImportError:
     DEEPFACE_AVAILABLE = False
 except Exception:
     DEEPFACE_AVAILABLE = False
+
+# -------------------------------------------------------------
+# LANGUAGE SETUP
+# -------------------------------------------------------------
+if "lang" not in st.session_state:
+    st.session_state["lang"] = "en"  # default English
+
+def set_lang(l):
+    st.session_state["lang"] = l
+
+def L(key: str) -> str:
+    """Helper to get translated text based on current language"""
+    lang = st.session_state.get("lang", "en")
+    return TEXT[key][lang]
+
+TEXT = {
+    "app_title": {
+        "en": "MoodWave AI",
+        "hi": "मूडवेव एआई",
+        "gu": "મૂડવેવ એઆઇ",
+    },
+    "app_subtitle": {
+        "en": "Capture your mood & instantly get handpicked songs that vibe with your emotion.",
+        "hi": "अपना मूड कैप्चर करें और तुरंत अपने इमोशन से मेल खाते चुने हुए गाने पाएं।",
+        "gu": "તમારો મૂડ કેપ્ચર કરો અને તરત જ તમારા ઈમોશન સાથે મેળ ખાતા પસંદગીના ગીતો મેળવો.",
+    },
+    "sidebar_title": {
+        "en": "MoodWave AI",
+        "hi": "मूडवेव एआई",
+        "gu": "મૂડવેવ એઆઇ",
+    },
+    "sidebar_desc": {
+        "en": "Capture your mood using your camera or a photo, and instantly get songs that vibe with your emotion.",
+        "hi": "कैमरा या फोटो से अपना मूड कैप्चर करें और तुरंत अपने इमोशन से मेल खाते गाने पाएं।",
+        "gu": "કેમેરા અથવા ફોટાથી તમારો મૂડ કેપ્ચર કરો અને તરત જ તમારા ઈમોશન પ્રમાણે ગીતો મેળવો.",
+    },
+    "sidebar_how_title": {
+        "en": "How it works",
+        "hi": "कैसे काम करता है",
+        "gu": "કેવી રીતે કામ કરે છે",
+    },
+    "sidebar_how_points": {
+        "en": "- Take or upload a selfie.\n- AI detects your dominant emotion.\n- We show curated songs from Hindi, English & Gujarati.\n- Or select your mood manually anytime.",
+        "hi": "- एक सेल्फी लें या फोटो अपलोड करें।\n- एआई आपका डॉमिनेंट इमोशन पहचानता है।\n- हम हिंदी, इंग्लिश और गुजराती के चुने हुए गाने दिखाते हैं।\n- या कभी भी अपना मूड मैन्युअली चुनें।",
+        "gu": "- સેલ્ફી લો અથવા ફોટો અપલોડ કરો.\n- એઆઇ તમારો ડોમિનેન્ટ ઈમોશન ઓળખે છે.\n- અમે હિન્દી, અંગ્રેજી અને ગુજરાતી ગીતોની પસંદગી બતાવીએ છીએ.\n- અથવા તમે ક્યારેય મેન્યુઅલી મૂડ પસંદ કરી શકો છો.",
+    },
+    "sidebar_creators": {
+        "en": "Creators",
+        "hi": "निर्माता",
+        "gu": "ક્રિએટર્સ",
+    },
+    "choose_input": {
+        "en": "Choose input method:",
+        "hi": "इनपुट तरीका चुनें:",
+        "gu": "ઇનપુટ પદ્ધતિ પસંદ કરો:",
+    },
+    "opt_camera": {
+        "en": "📷 Camera",
+        "hi": "📷 कैमरा",
+        "gu": "📷 કેમેરા",
+    },
+    "opt_upload": {
+        "en": "📁 Upload Photo",
+        "hi": "📁 फोटो अपलोड करें",
+        "gu": "📁 ફોટો અપલોડ કરો",
+    },
+    "camera_take_pic": {
+        "en": "📸 Take a picture",
+        "hi": "📸 फोटो लें",
+        "gu": "📸 ફોટો લો",
+    },
+    "upload_label": {
+        "en": "📁 Upload a photo",
+        "hi": "📁 एक फोटो अपलोड करें",
+        "gu": "📁 એક ફોટો અપલોડ કરો",
+    },
+    "manual_hint": {
+        "en": "If camera / detection fails, choose a mood and explore songs manually.",
+        "hi": "अगर कैमरा / डिटेक्शन फेल हो जाए, तो मूड चुनें और मैन्युअली गाने देखें।",
+        "gu": "જો કેમેરા / ડિટેક્શન નિષ્ફળ જાય, તો મૂડ પસંદ કરો અને મેન્યુઅલી ગીતો જુઓ.",
+    },
+    "quick_mood_title": {
+        "en": "🎧 Quick Mood Shortcuts (Manual Mood Selection)",
+        "hi": "🎧 क्विक मूड शॉर्टकट (मैन्युअल मूड चयन)",
+        "gu": "🎧 ક્વિક મૂડ શોર્ટકટ (મેન્યુઅલ મૂડ પસંદગી)",
+    },
+    "detect_spinner": {
+        "en": "Detecting your emotion... 🔍",
+        "hi": "आपका इमोशन पहचाना जा रहा है... 🔍",
+        "gu": "તમારો ઈમોશન ઓળખાઈ રહ્યો છે... 🔍",
+    },
+}
 
 # -------------------------------------------------------------
 # Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
@@ -144,7 +239,7 @@ st.markdown(
         text-decoration: underline;
     }
     
-    /* Fancy button tweak */
+    /* Fancy button tweak (global buttons) */
     .stButton>button {
         background: linear-gradient(135deg, #f97316, #ec4899);
         color: white;
@@ -220,7 +315,7 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* Selected option glow for 📷 Camera / 📁 Upload Photo */
+    /* Selected radio option glow */
     [data-testid="stRadio"] div[role="radiogroup"] > div:has(input:checked) {
         background: rgba(250,204,21,0.18);
         border-radius: 12px;
@@ -234,7 +329,7 @@ st.markdown(
         to   { box-shadow: 0 0 15px rgba(250,204,21,0.9); }
     }
 
-    /* Camera widget "Take Photo" button */
+    /* Camera widget Take Photo button */
     [data-testid="stCameraInput"] button {
         color: #facc15 !important;
         border: 1px solid #facc15 !important;
@@ -254,6 +349,17 @@ st.markdown(
         box-shadow: 0 0 28px rgba(250,204,21,1);
     }
 
+    /* Language buttons container special styling */
+    .lang-btn-container .stButton>button {
+        background: linear-gradient(135deg, #facc15, #fb7185);
+        box-shadow: 0 0 18px rgba(250,204,21,0.6);
+        animation: langPulse 1.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes langPulse {
+        from { box-shadow: 0 0 8px rgba(250,204,21,0.4); }
+        to   { box-shadow: 0 0 22px rgba(250,204,21,0.95); }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -362,6 +468,7 @@ def detect_emotion(image):
         dominant = r0.get('dominant_emotion', None)
         confidence = None
         if dominant and 'emotion' in r0 and isinstance(r0['emotion'], dict):
+            # score for that emotion
             score = r0['emotion'].get(dominant)
             if score is not None:
                 confidence = float(score)
@@ -372,37 +479,52 @@ def detect_emotion(image):
 
 # ----------------------- SIDEBAR -----------------------
 with st.sidebar:
-    st.markdown("## 🎭 MoodWave AI")
-    st.markdown(
-        "Capture your mood using your **camera or a photo**, and instantly get songs that vibe with your emotion."
-    )
+    st.markdown(f"## 🎭 {L('sidebar_title')}")
+    st.markdown(L("sidebar_desc"))
     if not DEEPFACE_AVAILABLE:
         st.warning(
             "⚠ DeepFace not available.\n\nAutomatic emotion detection is disabled. "
-            "Please use **Manual Mood Selection** or Quick Mood Shortcuts."
+            "Please use Manual Mood Selection or Quick Mood Shortcuts."
         )
 
     st.markdown("---")
-    st.markdown("### ℹ How it works")
-    st.markdown(
-        "- Take or upload a selfie.\n"
-        "- AI detects your dominant emotion.\n"
-        "- We show you curated songs from **Hindi, English & Gujarati**.\n"
-        "- Or select your mood manually anytime."
-    )
+    st.markdown(f"### ℹ {L('sidebar_how_title')}")
+    st.markdown(L("sidebar_how_points"))
 
     st.markdown("---")
-    st.markdown("👨‍💻 **Creators**\n\n- You\n- Dhruv")
+    st.markdown(f"👨‍💻 **{L('sidebar_creators')}**\n\n- You\n- Dhruv")
+
+# ----------------------- LANGUAGE BUTTONS (TOP) -----------------------
+lang_cols = st.columns(3)
+with lang_cols[0]:
+    st.markdown('<div class="lang-btn-container">', unsafe_allow_html=True)
+    if st.button("English", key="btn_en"):
+        set_lang("en")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with lang_cols[1]:
+    st.markdown('<div class="lang-btn-container">', unsafe_allow_html=True)
+    if st.button("हिंदी", key="btn_hi"):
+        set_lang("hi")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with lang_cols[2]:
+    st.markdown('<div class="lang-btn-container">', unsafe_allow_html=True)
+    if st.button("ગુજરાતી", key="btn_gu"):
+        set_lang("gu")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ----------------------- MAIN TITLE -----------------------
 st.markdown(
-    """
+    f"""
     <div style="text-align:center; margin-bottom: 1.2rem;">
         <div class="main-title" style="font-weight: 900;">
-            🎭 MoodWave AI
+            🎭 {L('app_title')}
         </div>
         <div class="subtitle" style="font-weight: 700; margin-top: 0.25rem;">
-            <b>Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</b>
+            <b>{L('app_subtitle')}</b>
         </div>
     </div>
     """,
@@ -415,15 +537,13 @@ st.markdown("<br>", unsafe_allow_html=True)
 col_left, col_right = st.columns([1.2, 1])
 
 with col_left:
-    input_options = ["📷 Camera", "📁 Upload Photo"]
-    if not DEEPFACE_AVAILABLE:
-        pass
+    input_options = ["camera", "upload"]  # logical keys
 
-    # Gold label for "Choose input method:"
+    # Gold custom label for "Choose input method:"
     st.markdown(
-        """
+        f"""
         <div class="gold-label">
-            Choose input method:
+            {L('choose_input')}
         </div>
         """,
         unsafe_allow_html=True
@@ -434,29 +554,29 @@ with col_left:
         input_options,
         horizontal=True,
         key="input_method",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        format_func=lambda x: L("opt_camera") if x == "camera" else L("opt_upload"),
     )
 
     uploaded_image = None
 
-    if input_method == "📷 Camera":
+    if input_method == "camera":
         # Gold animated label for "📸 Take a picture"
         st.markdown(
-            """
+            f"""
             <div class="camera-gold">
-                📸 Take a picture
+                {L('camera_take_pic')}
             </div>
             """,
             unsafe_allow_html=True
         )
-
         uploaded_image = st.camera_input(
             "",
             key="camera_input_main",
-            label_visibility="collapsed"
+            label_visibility="collapsed",
         )
     else:
-        uploaded_file = st.file_uploader("📁 Upload a photo", type=["png", "jpg", "jpeg"])
+        uploaded_file = st.file_uploader(L("upload_label"), type=["png", "jpg", "jpeg"])
         if uploaded_file is not None:
             uploaded_image = uploaded_file
 
@@ -470,8 +590,8 @@ with col_left:
 
         img_np = np.array(img.convert("RGB"))
 
-        with st.spinner("Detecting your emotion... 🔍"):
-            time.sleep(1.3)
+        with st.spinner(L("detect_spinner")):
+            time.sleep(1.3)  # smooth animation
             detected_emotion, detected_confidence = detect_emotion(img_np)
 
     # show auto-detected songs
@@ -522,11 +642,12 @@ with col_left:
 
 with col_right:
     # ----------------------- QUICK MOOD SHORTCUTS -----------------------
-    st.markdown("### 🎧 Quick Mood Shortcuts (Manual Mood Selection) ")
+    st.markdown(f"### {L('quick_mood_title')}")
     st.markdown(
-        "<span class='hint-label'>If camera / detection fails, choose a mood and explore songs manually.</span>",
+        f"<span class='hint-label'>{L('manual_hint')}</span>",
         unsafe_allow_html=True
     )
+
     quick_cols = st.columns(2)
     moods_row1 = ["happy", "sad", "angry", "neutral"]
     moods_row2 = ["surprise", "fear", "disgust"]
