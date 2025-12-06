@@ -288,7 +288,8 @@ with right_col:
             detected_emotion = detect_emotion(img_np)
 
     # --- SHOW RESULTS (Auto Detected) ---
-   detected_emotion:
+        
+detected_emotion:
         emo_key = detected_emotion.lower()
         emo_icon = emotion_emoji.get(emo_key, "🎭")
 
