@@ -20,7 +20,7 @@ except Exception as e:
 st.set_page_config(
     page_title="MoodWave AI",
     page_icon="🎭",
-    layout="wide"
+    layout="white"
 )
 
 # -------------------------------------------------------------
