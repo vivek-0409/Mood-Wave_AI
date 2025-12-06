@@ -173,3 +173,12 @@ if uploaded_image is not None:
                 unsafe_allow_html=True
             )
 
+st.divider()
+st.subheader("🎚️ Manual Mood Selection (Fallback Mode)")
+
+selected_emotion = st.selectbox(
+    "તમારું mood પસંદ કરો:",
+    options=list(emotion_to_songs.keys()),
+    index=0,
+    format_func=lambda x: x.capitalize()
+)
