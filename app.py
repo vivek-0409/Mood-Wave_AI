@@ -129,16 +129,6 @@ else:
 # -------------------------------------------------------------------
 # MODE 1: Automatic (only if DeepFace available)
 # -------------------------------------------------------------------
-
-emotion_style = {
-    "happy":   {"color": "#FACC15", "emoji": "😄"},
-    "sad":     {"color": "#60A5FA", "emoji": "😢"},
-    "angry":   {"color": "#F97373", "emoji": "😠"},
-    "surprise":{"color": "#FB923C", "emoji": "😲"},
-    "neutral": {"color": "#9CA3AF", "emoji": "😐"},
-    "fear":    {"color": "#A855F7", "emoji": "😨"},
-    "disgust": {"color": "#22C55E", "emoji": "🤢"},
-}
 if DEEPFACE_AVAILABLE:
     uploaded_image = st.camera_input("📸 Take a picture")
 
@@ -176,4 +166,11 @@ selected_emotion = st.selectbox(
     format_func=lambda x: x.capitalize()
 )
 
-
+if st.button("🎧 Show Songs for this Mood"):
+    st.success(f"Selected Emotion: **{selected_emotion.upper()}**")
+    songs = emotion_to_songs.get(selected_emotion, [])
+    if not songs:
+        st.info("આ emotion માટે preset songs નથી.")
+    else:
+        for name, url in songs:
+            st.markdown(f"- 🎵 [{name}]({url})")
