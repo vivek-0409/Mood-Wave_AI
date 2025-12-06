@@ -337,7 +337,7 @@ if detected_emotion:
 
 # ----------------------- MANUAL FALLBACK MODE -----------------------
 st.divider()
-st.subheader("🎚️ Manual Mood Selection (Fallback Mode)")
+st.subheader("🎚️ Manual Mood Selection")
 st.markdown(
     "<span class='hint-label'>If camera / detection fails, choose a mood and explore songs manually.</span>",
     unsafe_allow_html=True
