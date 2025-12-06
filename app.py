@@ -140,6 +140,267 @@ TEXT = {
 }
 
 # -------------------------------------------------------------
+# Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
+# -------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* 1. Page and Layout Setup */
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+    
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(120deg, #1e293b, #0f172a, #020617);
+        background-size: 300% 300%;
+        animation: gradientMove 12s ease infinite;
+    }
+
+    @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .stApp {
+        color: white;
+    }
+
+    /* Title Glow */
+    .main-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #e5e7eb;
+        text-shadow: 0 0 15px rgba(56, 189, 248, 0.5), 0 0 5px rgba(56, 189, 248, 0.3);
+    }
+    
+    .subtitle {
+        font-size: 0.95rem;
+        color: #e5e7eb;
+        opacity: 0.85;
+    }
+    
+    /* Glass Card Container */
+    .glass-card {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(18px);
+    }
+
+    /* Emotion Badge (Chip) */
+    .emotion-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #f97316, #fb7185);
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        animation: popIn 0.5s ease-out;
+        margin-bottom: 1rem;
+    }
+
+    @keyframes popIn {
+        0% { transform: scale(0.6); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    
+    /* New Keyframes for staggered entry */
+    @keyframes fadeInUp {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Song Card List Item (MODIFIED FOR ANIMATION) */
+    .song-card {
+        margin-bottom: 0.6rem;
+        border-radius: 14px;
+        padding: 0.8rem 1rem;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease, background 0.18s ease;
+        
+        /* Apply the staggered animation */
+        animation: fadeInUp 0.5s ease-out forwards; 
+        opacity: 0; /* Start hidden */
+    }
+
+    .song-card:hover {
+        transform: translateY(-2px) scale(1.01);
+        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
+        border-color: #38bdf8;
+        background: rgba(15, 23, 42, 0.95);
+    }
+
+    .song-title {
+        font-size: 0.95rem;
+        color: #e5e7eb;
+        font-weight: 500;
+    }
+
+    .song-link a {
+        font-size: 0.85rem;
+        text-decoration: none;
+        font-weight: 600;
+        color: #38bdf8;
+    }
+
+    .song-link a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Fancy button tweak (global buttons) */
+    .stButton>button {
+        background: linear-gradient(135deg, #f97316, #ec4899);
+        color: white;
+        border-radius: 999px;
+        border: none;
+        padding: 0.45rem 1.3rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        box-shadow: 0 10px 25px rgba(236, 72, 153, 0.55);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
+
+    .stButton>button:hover {
+        transform: translateY(-1px) scale(1.02);
+        box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
+        filter: brightness(1.05);
+    }
+    
+    /* Widget Labels */
+    [data-testid="stWidgetLabel"] > label {
+        color: white !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+    }
+
+    /* Hint/Footer Label */
+    .hint-label {
+        font-size: 1rem;
+        color: white;
+        font-weight: 500;
+        opacity: 1;
+    }
+
+    /* Quick mood shortcut badge style */
+    .mood-chip {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(15, 23, 42, 0.7);
+        font-size: 0.85rem;
+        margin: 0.15rem;
+    }
+
+    /* ---------------------- GOLD STYLES FOR INPUT METHOD & CAMERA ---------------------- */
+
+    /* Gold label for "Choose input method:" */
+    .gold-label {
+        color: #facc15;
+        font-weight: 800;
+        font-size: 1.1rem;
+        text-shadow: 0 0 10px rgba(250,204,21,0.6);
+        margin-bottom: 0.3rem;
+    }
+
+    /* Gold animated label for "📸 Take a picture" */
+    .camera-gold {
+        color: #facc15;
+        font-weight: 900;
+        font-size: 1.15rem;
+        text-shadow: 0 0 12px rgba(250,204,21,0.8);
+        animation: pulseGold 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGold {
+        from { text-shadow: 0 0 6px rgba(250,204,21,0.5); }
+        to  { text-shadow: 0 0 16px rgba(250,204,21,1); }
+    }
+
+    /* Radio options gold color */
+    [data-testid="stRadio"] label {
+        color: #facc15 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Selected radio option glow */
+    [data-testid="stRadio"] div[role="radiogroup"] > div:has(input:checked) {
+        background: rgba(250,204,21,0.18);
+        border-radius: 12px;
+        padding: 3px 10px;
+        box-shadow: 0 0 15px rgba(250,204,21,0.7);
+        animation: goldSelect 0.2s ease-out;
+    }
+
+    @keyframes goldSelect {
+        from { box-shadow: 0 0 0 rgba(250,204,21,0.0); }
+        to  { box-shadow: 0 0 15px rgba(250,204,21,0.9); }
+    }
+
+    /* Camera widget Take Photo button */
+    [data-testid="stCameraInput"] button {
+        color: #facc15 !important;
+        border: 1px solid #facc15 !important;
+        background: transparent !important;
+        font-weight: 800 !important;
+        transition: 0.2s;
+    }
+
+    [data-testid="stCameraInput"] button:hover {
+        background: rgba(250,204,21,0.18) !important;
+        transform: scale(1.03);
+        box-shadow: 0 0 20px rgba(250,204,21,0.75);
+    }
+
+    [data-testid="stCameraInput"] button:active {
+        transform: scale(0.96);
+        box-shadow: 0 0 28px rgba(250,204,21,1);
+    }
+
+    /* Language buttons container special styling */
+    .lang-btn-container .stButton>button {
+        background: linear-gradient(135deg, #facc15, #fb7185);
+        box-shadow: 0 0 18px rgba(250,204,21,0.6);
+        animation: langPulse 1.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes langPulse {
+        from { box-shadow: 0 0 8px rgba(250,204,21,0.4); }
+        to  { box-shadow: 0 0 22px rgba(250,204,21,0.95); }
+    }
+    
+    /* Closing Footer Message (NEW) */
+    .closing-message {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #facc15; 
+        text-shadow: 0 0 10px rgba(250,204,21, 0.4);
+        border: 1px solid rgba(250,204,21, 0.3);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# -------------------------------------------------------------
 # Data: Emotion → Songs
 # -------------------------------------------------------------
 emotion_to_songs = {
@@ -147,7 +408,7 @@ emotion_to_songs = {
         ("Aankh Marey – Simmba", "https://open.spotify.com/track/63MvWd6T6yoS7h4AJ4Hjrm"),
         ("Nashe Si Chadh गई – Befikre", "https://open.spotify.com/track/3uoQUnKEedaeLKxUeVaJwj"),
         ("Happy – Pharrell Williams", "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH"),
-        ("Can’t Stop the Feeling – Justin Timberlake", "https://open.spotify.com/track/6JV2JOEocMycZxYSZelKcc"),
+        ("Can’t Stop the Feeling – Justin Timberlake", "https://open.spotify.com/track/6JV2JOEocMgcZxYSZelKcc"),
         ("Hokaliyo", "https://open.spotify.com/artist/535ascn4f13hFo2kjCodKE"),
         ("Vaagyo Re Dhol – Hellaro", "https://open.spotify.com/track/3GSyZg9iVdj1WjKzBcLakX"),
         ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
@@ -309,22 +570,6 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ----------------------- TOP RIGHT CREATOR BUTTONS (GLOBAL PLACEMENT) -----------------------
-# Use st.link_button inside narrow columns to make them appear small and push them to the right.
-# These columns are placed immediately after the main title area for persistent top-right visibility.
-creator_cols = st.columns([8, 1, 1])
-with creator_cols[1]:
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-with creator_cols[2]:
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-st.markdown("---") 
-# ----------------------- END TOP RIGHT CREATOR BUTTONS -----------------------
-
-
 # ----------------------- INPUT METHOD -----------------------
 col_left, col_right = st.columns([1.2, 1])
 
@@ -435,6 +680,16 @@ with col_left:
         st.markdown("</div>", unsafe_allow_html=True)
 
 with col_right:
+    # ----------------------- CREATOR LINKS (NEW MAIN PAGE BUTTONS) -----------------------
+    st.markdown("### 🔗 Connect with Creators")
+    link_cols = st.columns(2)
+    with link_cols[0]:
+        # Using link_button for better visibility on the main page
+        st.link_button("Me (Vivekkumar) 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
+    with link_cols[1]:
+        st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
+    st.markdown("---")
+    
     # ----------------------- QUICK MOOD SHORTCUTS -----------------------
     st.markdown(f"### {L('quick_mood_title')}")
     st.markdown(
