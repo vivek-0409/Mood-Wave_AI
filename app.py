@@ -80,112 +80,8 @@ st.markdown(
         color: #e5e7eb;
         opacity: 0.85;
     }
-
-    /* ---------------- GOLD LABEL + ANIMATION ---------------- */
-
-    /* ---------------------- GOLD CAMERA LABEL & BUTTON ---------------------- */
-
-    /* Custom gold label text just for "📸 Take a picture" */
-    .camera-label-gold {
-        color: #facc15;               /* gold */
-        font-weight: 800;
-        font-size: 1.1rem;
-        margin-bottom: 0.3rem;
-        cursor: pointer;
-        text-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
-        animation: goldPulse 1.4s ease-in-out infinite alternate;
-    }
-
-    .camera-label-gold:hover {
-        color: #fde68a;  /* lighter gold on hover */
-        text-shadow: 0 0 16px rgba(250, 204, 21, 0.9);
-    }
-
-    @keyframes goldPulse {
-        0% {
-            text-shadow: 0 0 6px rgba(250, 204, 21, 0.4);
-        }
-        100% {
-            text-shadow: 0 0 16px rgba(250, 204, 21, 0.95);
-        }
-    }
-
-    /* Style ONLY the camera "Take Photo" button */
-    [data-testid="stCameraInput"] button {
-        color: #facc15 !important;                        /* gold text */
-        border: 1px solid #facc15 !important;
-        background: transparent !important;
-        font-weight: 700;
-        transition: all 0.22s ease-in-out;
-        box-shadow: 0 0 0 rgba(250, 204, 21, 0.0);
-    }
-
-    /* Hover effect */
-    [data-testid="stCameraInput"] button:hover {
-        background: rgba(250, 204, 21, 0.18) !important;
-        color: #fef9c3 !important;
-        transform: translateY(-1px) scale(1.02);
-        box-shadow: 0 0 18px rgba(250, 204, 21, 0.7);
-    }
-
-    /* Click animation (on press) */
-    [data-testid="stCameraInput"] button:active {
-        transform: scale(0.97);
-        box-shadow: 0 0 26px rgba(250, 204, 21, 0.9);
-    }
-
-
-    /* ---------------- RADIO OPTIONS (📷 Camera / 📁 Upload Photo) ---------------- */
-
-    /* Base gold for radio option text */
-    [data-testid="stRadio"] div[role="radiogroup"] > label > div {
-        color: #facc15;
-        font-weight: 600;
-        transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.15s ease;
-    }
-
-    /* On hover */
-    [data-testid="stRadio"] div[role="radiogroup"] > label:hover > div {
-        text-shadow: 0 0 12px rgba(250, 204, 21, 0.7);
-        transform: translateY(-1px);
-    }
-
-    /* When radio is focused (clicked/selected) – small glow */
-    [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) > div {
-        color: #fde047;
-        text-shadow: 0 0 16px rgba(250, 250, 110, 0.95);
-        transform: scale(1.01);
-    }
-
-    /* ---------------- CAMERA "TAKE PHOTO" BUTTON ---------------- */
-
-    /* Container for camera widget – target its button */
-    [data-testid="stCameraInput"] button {
-        color: #facc15 !important;  /* gold text */
-        font-weight: 700;
-        border-radius: 999px;
-        border: 1px solid rgba(250, 204, 21, 0.6);
-        background: rgba(15, 23, 42, 0.9);
-        box-shadow: 0 0 10px rgba(250, 204, 21, 0.35);
-        transition: color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease, background 0.25s ease;
-    }
-
-    /* Hover animation for Take Photo button */
-    [data-testid="stCameraInput"] button:hover {
-        box-shadow: 0 0 18px rgba(250, 204, 21, 0.7);
-        background: rgba(30, 64, 175, 0.9);
-        transform: translateY(-1px) scale(1.01);
-    }
-
-    /* Click (active) animation for Take Photo button */
-    [data-testid="stCameraInput"] button:active {
-        color: #fef9c3 !important;  /* very light gold */
-        transform: scale(0.97);
-        box-shadow: 0 0 22px rgba(250, 250, 110, 0.9);
-    }
-
-    /* Other styles you already had (song cards, etc.) */
-
+    
+    /* Glass Card Container */
     .glass-card {
         background: rgba(15, 23, 42, 0.8);
         border-radius: 20px;
@@ -195,6 +91,7 @@ st.markdown(
         backdrop-filter: blur(18px);
     }
 
+    /* Emotion Badge (Chip) */
     .emotion-badge {
         display: inline-flex;
         align-items: center;
@@ -214,6 +111,7 @@ st.markdown(
         100% { transform: scale(1); opacity: 1; }
     }
 
+    /* Song Card List Item */
     .song-card {
         margin-bottom: 0.6rem;
         border-radius: 14px;
@@ -249,7 +147,34 @@ st.markdown(
     .song-link a:hover {
         text-decoration: underline;
     }
+    
+    /* Fancy button tweak */
+    .stButton>button {
+        background: linear-gradient(135deg, #f97316, #ec4899);
+        color: white;
+        border-radius: 999px;
+        border: none;
+        padding: 0.45rem 1.3rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        box-shadow: 0 10px 25px rgba(236, 72, 153, 0.55);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
 
+    .stButton>button:hover {
+        transform: translateY(-1px) scale(1.02);
+        box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
+        filter: brightness(1.05);
+    }
+    
+    /* Widget Labels */
+    [data-testid="stWidgetLabel"] > label {
+        color: white !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+    }
+
+    /* Hint/Footer Label */
     .hint-label {
         font-size: 1rem;
         color: white;
@@ -257,6 +182,16 @@ st.markdown(
         opacity: 1;
     }
 
+    /* Quick mood shortcut badge style */
+    .mood-chip {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(15, 23, 42, 0.7);
+        font-size: 0.85rem;
+        margin: 0.15rem;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -396,7 +331,7 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("👨‍💻 **Creators**\n\n- Me\n- Dhruv")
+    st.markdown("👨‍💻 **Creators**\n\n- You\n- Dhruv")
 
 # ----------------------- MAIN TITLE -----------------------
 st.markdown(
@@ -429,23 +364,15 @@ with col_left:
 
     uploaded_image = None
 
-   # ----------------------- CAMERA -----------------------
-# Custom gold label text
-st.markdown(
-    """
-    <div class="camera-label-gold">
-        📸 Take a picture
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+    if input_method == "📷 Camera":
+        uploaded_image = st.camera_input("📸 Take a picture")
+    else:
+        uploaded_file = st.file_uploader("📁 Upload a photo", type=["png", "jpg", "jpeg"])
+        if uploaded_file is not None:
+            uploaded_image = uploaded_file
 
-uploaded_image = st.camera_input(
-    "",               # empty label
-    key="camera_input_main",
-    label_visibility="collapsed"  # hide default label text
-)
-
+    detected_emotion = None
+    detected_confidence = None
 
     # ----------------------- AUTO MODE (DeepFace) -----------------------
     if uploaded_image is not None and DEEPFACE_AVAILABLE:
@@ -561,4 +488,3 @@ with col_right:
             )
             
         st.markdown("</div>", unsafe_allow_html=True)
-
