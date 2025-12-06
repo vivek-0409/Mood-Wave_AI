@@ -14,7 +14,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-)
+
 
 # -------------------------------------------------------------
 # Dependency Check (Handle DeepFace/TensorFlow loading errors gracefully)
