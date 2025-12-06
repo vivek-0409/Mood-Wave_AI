@@ -16,14 +16,7 @@ st.set_page_config(
 # -------------------------------------------------------------
 # Top small credit text
 # -------------------------------------------------------------
-st.markdown(
-    f"""
-    <p>  </p>
-    <p><div class="main-title">Made by :-</div></p>
-    <div class="main-title">Me and Dhruv</div>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 # -------------------------------------------------------------
 # Dependency Check (Handle DeepFace/TensorFlow loading errors gracefully)
