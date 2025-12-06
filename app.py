@@ -329,7 +329,7 @@ else:
     )
 
 # Main layout – two columns
-
+left_col, right_col = st.columns([1.1, 1])
 
 with left_col:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
