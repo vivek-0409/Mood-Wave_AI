@@ -8,7 +8,7 @@ import time
 # Streamlit Page Config (optional)
 # -------------------------------------------------------------
 st.set_page_config(
-    page_title="MoodWave AI",
+    page_title="### MoodWave AI",
     page_icon="🎭",
     layout="wide"
 )
