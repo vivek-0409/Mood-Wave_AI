@@ -684,34 +684,8 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ----------------------- TOP RIGHT CREATOR LINKS (GLOBAL PLACEMENT) -----------------------
 
-# Header spanning the two button columns (aligned to the right)
-st.markdown(
-    f'<div style="text-align: right; margin-bottom: 5px;">'
-    f'<span class="creator-connect-header">🔗 Connect with Creators</span>'
-    f'</div>',
-    unsafe_allow_html=True
-)
 
-# Buttons below the header
-# Adjust column widths to push content to the far right
-creator_btn_cols = st.columns([7, 1.5, 1.5]) 
-
-with creator_btn_cols[1]:
-    # Using the CSS class for the button to apply animation and glow
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-with creator_btn_cols[2]:
-    # Using the CSS class for the button to apply animation and glow
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("---") # Separator before the main columns start
-# ----------------------- END TOP RIGHT CREATOR LINKS -----------------------
 
 
 # ----------------------- INPUT METHOD -----------------------
@@ -880,6 +854,35 @@ with col_right:
                 unsafe_allow_html=True,
             )
         st.markdown("</div>", unsafe_allow_html=True)
+
+
+        # ----------------------- TOP RIGHT CREATOR LINKS (GLOBAL PLACEMENT) -----------------------
+
+# Header spanning the two button columns (aligned to the right)
+st.markdown(
+    f'<div style="text-align: right; margin-bottom: 5px;">'
+    f'<span class="creator-connect-header">🔗 Connect with Creators</span>'
+    f'</div>',
+    unsafe_allow_html=True
+)
+
+# Buttons below the header
+# Adjust column widths to push content to the far right
+creator_btn_cols = st.columns([7, 1.5, 1.5]) 
+
+with creator_btn_cols[1]:
+    # Using the CSS class for the button to apply animation and glow
+    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
+    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+with creator_btn_cols[2]:
+    # Using the CSS class for the button to apply animation and glow
+    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
+    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("---") # Separator before the main columns start
 
 # ----------------------- CLOSING MESSAGE (Thank You) -----------------------
 st.markdown("---") # Add a separator before the final message
