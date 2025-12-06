@@ -9,8 +9,8 @@ import time
 # -------------------------------------------------------------
 st.markdown(
     f"""
-    <p><div class="main-title">Made</div></p>
-    <p><div class="main-title">by</div></p>
+    <div class="main-title">Made</div>
+    <div class="main-title">by</div>
     <div class="main-title">Me and Dhruv</div>
     """,
     unsafe_allow_html=True,
