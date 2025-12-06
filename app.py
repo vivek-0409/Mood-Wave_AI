@@ -9,14 +9,12 @@ import time
 # -------------------------------------------------------------
 st.markdown(
     f"""
-    <p><div class="main-title">Made</div></p>
-    <p><div class="main-title">by</div></p>
+    <p><div class="main-title">Made by</div></p>
+    <p><div class="main-title"></div></p>
     <div class="main-title">Me and Dhruv</div>
     """,
     unsafe_allow_html=True,
 )
-print("Made")
-print("   by   ")
 
 # -------------------------------------------------------------
 # Dependency Check (Handle DeepFace/TensorFlow loading errors gracefully)
