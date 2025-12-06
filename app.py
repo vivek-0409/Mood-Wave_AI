@@ -176,25 +176,4 @@ selected_emotion = st.selectbox(
     format_func=lambda x: x.capitalize()
 )
 
-st.markdown("### 🎧 Recommended Songs")
 
-active_emotion = st.session_state.detected_emotion or "neutral"
-songs = emotion_to_songs.get(active_emotion, [])
-
-if not songs:
-    st.info("આ emotion માટે preset songs નથી. Try another mood.")
-else:
-    for name, url in songs:
-        st.markdown(
-            f"""
-            <div class="song-card">
-                <div class="song-name">🎵 {name}</div>
-                <div class="song-link">
-                    <a href="{url}" target="_blank">Open in Spotify</a>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-st.markdown("</div></div>", unsafe_allow_html=True)
