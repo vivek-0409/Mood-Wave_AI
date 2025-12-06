@@ -242,7 +242,6 @@ emotion_to_songs = {
         ("Baap Dhamaal – Jignesh Kaviraj", "https://open.spotify.com/album/2MhZPFL3YT4szEQQCZ8BoN"),
     ],
 }
-
 emotion_emoji = {
     "happy": "😄",
     "sad": "😢",
@@ -268,16 +267,19 @@ def detect_emotion(image):
             enforce_detection=False
         )
 
-        # DeepFace result handling
-        if isinstance(result, list) and result:
+        # DeepFace 0.0.96 ક્યારેક list આપે, ક્યારેક dict
+        if isinstance(result, list):
             return result[0].get('dominant_emotion')
-        elif isinstance(result, dict) and 'dominant_emotion' in result:
-             return result['dominant_emotion']
-        
+        elif isinstance(result, dict):
+            if 'dominant_emotion' in result:
+                return result['dominant_emotion']
+            elif 'emotion' in result and isinstance(result['emotion'], dict):
+                return result['emotion'].get('dominant')
+
         return None
 
     except Exception as e:
-        # st.error(f"Error detecting emotion: {e}") # Suppressing error here, fallback handles it
+        st.error(f"Error detecting emotion: {e}")
         return None
 
 # -------------------------------------------------------------
@@ -285,9 +287,17 @@ def detect_emotion(image):
 # -------------------------------------------------------------
 # Header
 st.markdown(
-    f"""
-    <div class="main-title">🎭 MoodWave AI</div>
-    <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
+    """
+    <div class="glass-soft" style="margin-bottom: 1rem; display:flex; align-items:center; justify-content:space-between; gap: 0.75rem;">
+        <div>
+            <div class="title-glow">🎭 MoodWave AI</div>
+            <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+            <div class="pulse-dot"></div>
+            <span class="hint-label">Live emotion-powered recommendations</span>
+        </div>
+    </div>
     """,
     unsafe_allow_html=True,
 )
@@ -301,13 +311,8 @@ else:
         "Automatic detection બંધ છે, પણ તમે manual mood select કરીને songs જોઈ શકો છો."
     )
 
-st.markdown("---")
-
 # Main layout – two columns
 left_col, right_col = st.columns([1.1, 1])
-
-uploaded_image = None
-img_np = None
 
 with left_col:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
@@ -322,7 +327,6 @@ with left_col:
 
     if uploaded_image is not None:
         img = Image.open(uploaded_image)
-        img_np = np.array(img.convert("RGB"))
         st.image(img, caption="Your Photo", use_column_width=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -333,7 +337,8 @@ with right_col:
 
     detected_emotion = None
 
-    if uploaded_image is not None and img_np is not None and DEEPFACE_AVAILABLE:
+    if uploaded_image is not None and DEEPFACE_AVAILABLE:
+        img_np = np.array(img.convert("RGB"))
         with st.spinner("🔍 Analyzing your emotion..."):
             detected_emotion = detect_emotion(img_np)
 
@@ -374,17 +379,16 @@ with right_col:
         st.info("કેમેરાથી photo લો અથવા નીચે તમારા mood પ્રમાણે songs જુઓ 👇")
 
         # Manual fallback
-        st.markdown("<h3 style='margin-top: 1.5rem;'>🎚️ Manual Mood Selection</h3>", unsafe_allow_html=True)
+        st.markdown("### 🎚️ Manual Mood Selection")
 
         selected_emotion = st.selectbox(
             "તમારું mood પસંદ કરો:",
             options=list(emotion_to_songs.keys()),
             index=0,
-            format_func=lambda x: x.capitalize(),
-            key="manual_select"
+            format_func=lambda x: x.capitalize()
         )
 
-        if st.button("🎧 Show Songs for this Mood", key="show_manual_songs"):
+        if st.button("🎧 Show Songs for this Mood"):
             emo_icon = emotion_emoji.get(selected_emotion, "🎭")
             st.markdown(
                 f"""
@@ -418,7 +422,7 @@ with right_col:
 # Footer hint
 st.markdown(
     """
-    <div style="margin-top: 2rem; text-align: center;">
+    <div style="margin-top: 1rem; text-align: center;">
         <span class="hint-label">
             Built with ❤️ using Streamlit &amp; DeepFace · Capture → Detect → Vibe 🎶
         </span>
@@ -426,3 +430,4 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
