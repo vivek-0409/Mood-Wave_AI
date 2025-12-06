@@ -12,7 +12,7 @@ st.markdown(
     <p><div class="main-title"> </div></p>
     <p><div class="main-title"> </div></p>
     <p><div class="main-title"> </div></p>
-    <div class="main-title">Made by Me and Dhruv</div>
+    <p><div class="main-title">Made by Me and Dhruv</div></p>
     """,
     unsafe_allow_html=True,
 )
