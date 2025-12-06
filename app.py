@@ -15,13 +15,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    f"""
-    <div class="main-title">🎭 MoodWave AI</div>
-    <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 
 # -------------------------------------------------------------
@@ -278,6 +272,19 @@ def detect_emotion(image):
         return None
 
 # ----------------------- UI TITLE -----------------------
+st.markdown(
+    """
+    <div style="text-align:center; margin-bottom: 1.2rem;">
+        <div class="main-title" style="font-weight: 900;">
+            🎭 MoodWave AI
+        </div>
+        <div class="subtitle" style="font-weight: 700; margin-top: 0.25rem;">
+            <b>Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</b>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 st.markdown("<br>", unsafe_allow_html=True)
