@@ -182,3 +182,12 @@ selected_emotion = st.selectbox(
     index=0,
     format_func=lambda x: x.capitalize()
 )
+
+if st.button("🎧 Show Songs for this Mood"):
+    st.success(f"Selected Emotion: **{selected_emotion.upper()}**")
+    songs = emotion_to_songs.get(selected_emotion, [])
+    if not songs:
+        st.info("આ emotion માટે preset songs નથી.")
+    else:
+        for name, url in songs:
+            st.markdown(f"- 🎵 [{name}]({url})")
