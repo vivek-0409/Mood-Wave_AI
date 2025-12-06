@@ -1,8 +1,7 @@
-import cv2
+import streamlit as st
 from deepface import DeepFace
 from PIL import Image
-import streamlit as st
-import os
+import numpy as np
 
 
 emotion_to_songs = {
@@ -77,45 +76,36 @@ emotion_to_songs = {
     ]
 }
 
-def take_photo(filename='photo.jpg'):
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        st.error("Cannot open camera")
-        return None
-    ret, frame = cap.read()
-    if not ret:
-        st.error("Can't receive frame (stream end?). Exiting ...")
-        return None
-    cv2.imwrite(filename, frame)
-    cap.release()
-    cv2.destroyAllWindows()
-    return filename
-
-def detect_emotion(img_path):
+def detect_emotion(image):
     try:
-        result = DeepFace.analyze(img_path=img_path, actions=['emotion'], enforce_detection=False)
+        result = DeepFace.analyze(
+            img_path=image,
+            actions=['emotion'],
+            enforce_detection=False
+        )
         return result[0]['dominant_emotion']
     except Exception as e:
-        st.error(f"❌ Error: {e}")
-        return "error"
+        st.error(f"Error detecting emotion: {e}")
+        return None
 
 
-st.title("Emotion-Based Song Recommendation")
+st.title("🎭 MoodWave AI – Emotion Based Song Recommendation")
 
+uploaded_image = st.camera_input("📸 Take a picture")
 
-if st.button("Capture Photo"):
-    img_path = take_photo()
-    if img_path:
-        st.image(img_path, caption="Captured Image", use_column_width=True)
+if uploaded_image is not None:
+    img = Image.open(uploaded_image)
+    st.image(img, caption="Your Photo", use_column_width=True)
 
-        # Detect emotion
-        emotion = detect_emotion(img_path)
+    img_np = np.array(img.convert("RGB"))
 
-        if emotion == "error":
-            st.warning("⚠️ Could not detect emotion. Try again.")
-        else:
-            st.success(f"🎭 Detected Emotion: {emotion.upper()}")
-            st.subheader("🎧 Recommended Songs:")
-            songs = emotion_to_songs.get(emotion, [])
-            for name, url in songs:
-                st.markdown(f"- 🎵 [{name}]({url})")
+    emotion = detect_emotion(img_np)
+
+    if emotion:
+        st.success(f"🎭 Detected Emotion: **{emotion.upper()}**")
+
+        st.subheader("🎧 Recommended Songs:")
+        songs = emotion_to_songs.get(emotion.lower(), [])
+
+        for name, url in songs:
+            st.markdown(f"- 🎵 [{name}]({url})")
