@@ -1,0 +1,9 @@
+opencv-python-headless
+pillow
+deepface
+streamlit
+
+
+# step 1
+# emotion_app\tf-env\Scripts\Activate.ps1
+
