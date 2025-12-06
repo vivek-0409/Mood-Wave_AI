@@ -1,11 +1,22 @@
 import streamlit as st
-from deepface import DeepFace
 from PIL import Image
 import numpy as np
 
-# ---------------- EMOTION → SONGS MAP ---------------- #
+# -------------------------------------------------------------------
+# Try to import DeepFace – if it fails (TensorFlow issue on cloud),
+# we fall back to manual mood selection.
+# -------------------------------------------------------------------
+DEEPFACE_AVAILABLE = True
+DEEPFACE_ERROR = None
+
+try:
+    from deepface import DeepFace
+except Exception as e:
+    DEEPFACE_AVAILABLE = False
+    DEEPFACE_ERROR = str(e)
+
 emotion_to_songs = {
-    "happy": [
+    'happy': [
         ("Aankh Marey – Simmba", "https://open.spotify.com/track/63MvWd6T6yoS7h4AJ4Hjrm"),
         ("Nashe Si Chadh Gayi – Befikre", "https://open.spotify.com/track/3uoQUnKEedaeLKxUeVaJwj"),
         ("Happy – Pharrell Williams", "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH"),
@@ -14,7 +25,8 @@ emotion_to_songs = {
         ("Vaagyo Re Dhol – Hellaro", "https://open.spotify.com/track/3GSyZg9iVdj1WjKzBcLakX"),
         ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
     ],
-    "sad": [
+
+    'sad': [
         ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
         ("Channa Mereya – Arijit Singh", "https://open.spotify.com/track/0H2iJVgorRR0ZFgRqGUjUM"),
         ("Tujhe Kitna Chahne Lage – Kabir Singh", "https://open.spotify.com/track/3dYD57lRAUcMHufyqn9GcI"),
@@ -23,7 +35,8 @@ emotion_to_songs = {
         ("Mane Yaad Ave – Parthiv Gohil", "https://open.spotify.com/track/1JVAoIO4NtjlejraxemhLh"),
         ("Chand Ne Kaho – Jigardan Gadhavi", "https://open.spotify.com/track/6ci9DNOBLvA7jVDkMYf5Df"),
     ],
-    "angry": [
+
+    'angry': [
         ("Zinda – Bhaag Milkha Bhaag", "https://open.spotify.com/track/6Zo8diPZAjkUH4rWDMgeiE"),
         ("Sultan Title Track", "https://open.spotify.com/track/3LJhJG3EsmhCq9bNn047lu"),
         ("Believer – Imagine Dragons", "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP"),
@@ -31,7 +44,8 @@ emotion_to_songs = {
         ("Rag Rag Mein – Kirtidan Gadhvi", "https://open.spotify.com/artist/7odYFkW15De3A7aAuk5x9h"),
         ("Jode Tame Rahejo – Gujarati Garba", "https://open.spotify.com/track/3ByO0k09IsJPqAGncEVuYQ"),
     ],
-    "surprise": [
+
+    'surprise': [
         ("Senorita – ZNMD", "https://open.spotify.com/track/6b8zsc3BxT59Yg62wjt7qA"),
         ("Odhani – Made In China", "https://open.spotify.com/track/2q0V50aNlI1RQXJyE5HDgD"),
         ("Uptown Funk – Bruno Mars", "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS"),
@@ -40,7 +54,8 @@ emotion_to_songs = {
         ("Halaji Tara Fulwadi", "https://open.spotify.com/track/58kDGOUvK1foT7UGnZYaFQ"),
         ("Kaka Bapa Na Gaam Nu", "https://open.spotify.com/track/4YigRMdxg9DJNL0rh6V1KK"),
     ],
-    "neutral": [
+
+    'neutral': [
         ("Ilahi – Yeh Jawaani Hai Deewani", "https://open.spotify.com/track/0VxgNsSywsjapKGXvzj8RH"),
         ("Tera Yaar Hoon Main", "https://open.spotify.com/track/3ZCTVFBt2Brf31RLEnCkWJ"),
         ("Counting Stars – OneRepublic", "https://open.spotify.com/track/2tpWsVSb9UEmDRxAl1zhX1"),
@@ -49,7 +64,8 @@ emotion_to_songs = {
         ("Gujarati Folk Mashup – RJ Dhvanit", "https://open.spotify.com/artist/7AeKpTtsd8BgYZAAGZ4s48"),
         ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
     ],
-    "fear": [
+
+    'fear': [
         ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
         ("Namo Namo – Kedarnath", "https://open.spotify.com/track/5Fx864foKMyZtJbBiwvyBz"),
         ("Kun Faya Kun – Rockstar", "https://open.spotify.com/track/7F8RNvTQlvbeBLeenycvN6"),
@@ -58,7 +74,8 @@ emotion_to_songs = {
         ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
         ("Kadi Aevi Yaad – Rakesh Barot", "https://open.spotify.com/track/748eQN6KCbOO1ylkwHdaXD"),
     ],
-    "disgust": [
+
+    'disgust': [
         ("Apna Time Aayega – Gully Boy", "https://open.spotify.com/track/5FLgOuLoVwwUUF7IL36Lux"),
         ("Sher Aaya Sher – Gully Boy", "https://open.spotify.com/track/7zT92EewVvLfiPyKSTJUT6"),
         ("Power – Kanye West", "https://open.spotify.com/track/2gZUPNdnz5Y45eiGxpH"),
@@ -68,7 +85,51 @@ emotion_to_songs = {
     ],
 }
 
-# ------------- EMOTION → COLOR / EMOJI ------------- #
+def detect_emotion(image):
+    """Use DeepFace if available, otherwise return None."""
+    if not DEEPFACE_AVAILABLE:
+        return None
+
+    try:
+        result = DeepFace.analyze(
+            img_path=image,
+            actions=['emotion'],
+            enforce_detection=False
+        )
+
+        # DeepFace 0.0.96 ક્યારેક list આપે, ક્યારેક dict
+        if isinstance(result, list):
+            return result[0].get('dominant_emotion')
+        elif isinstance(result, dict):
+            # કેટલાક versions માં result["emotion"]["dominant"] હોય
+            if 'dominant_emotion' in result:
+                return result['dominant_emotion']
+            elif 'emotion' in result and isinstance(result['emotion'], dict):
+                return result['emotion'].get('dominant')
+        return None
+
+    except Exception as e:
+        st.error(f"Error detecting emotion: {e}")
+        return None
+
+
+st.title("🎭 MoodWave AI – Emotion Based Song Recommendation")
+
+if DEEPFACE_AVAILABLE:
+    st.caption("✅ DeepFace loaded successfully – automatic emotion detection is ON.")
+else:
+    st.warning(
+        "⚠️ DeepFace / TensorFlow આ hosting environment માં load થતું નથી.\n\n"
+        "Cloud પર automatic emotion detection બંધ છે, પણ તમે નીચે mood manually select કરી શકો છો."
+    )
+    if DEEPFACE_ERROR:
+        with st.expander("🔍 Technical details (for debugging)"):
+            st.code(DEEPFACE_ERROR)
+
+# -------------------------------------------------------------------
+# MODE 1: Automatic (only if DeepFace available)
+# -------------------------------------------------------------------
+
 emotion_style = {
     "happy":   {"color": "#FACC15", "emoji": "😄"},
     "sad":     {"color": "#60A5FA", "emoji": "😢"},
@@ -77,266 +138,44 @@ emotion_style = {
     "neutral": {"color": "#9CA3AF", "emoji": "😐"},
     "fear":    {"color": "#A855F7", "emoji": "😨"},
     "disgust": {"color": "#22C55E", "emoji": "🤢"},
-}
+    
+if DEEPFACE_AVAILABLE:
+    uploaded_image = st.camera_input("📸 Take a picture")
 
-# ------------- SESSION STATE ------------- #
-if "detected_emotion" not in st.session_state:
-    st.session_state.detected_emotion = None
+    if uploaded_image is not None:
+        img = Image.open(uploaded_image)
+        st.image(img, caption="Your Photo", use_column_width=True)
 
-# ------------- EMOTION DETECTION ------------- #
-def detect_emotion(image):
-    try:
-        result = DeepFace.analyze(
-            img_path=image,
-            actions=["emotion"],
-            enforce_detection=False
-        )
-        # DeepFace 0.0.96 ઘણી વાર list આપે છે
-        if isinstance(result, list):
-            return result[0]["dominant_emotion"]
-        return result.get("dominant_emotion")
-    except Exception as e:
-        st.error(f"Error detecting emotion: {e}")
-        return None
+        img_np = np.array(img.convert("RGB"))
+        emotion = detect_emotion(img_np)
 
-# ------------- DYNAMIC THEME (BG + TITLE) ------------- #
-current_emotion = st.session_state.detected_emotion
+        if emotion:
+            st.success(f"🎭 Detected Emotion: **{emotion.upper()}**")
 
-if current_emotion and current_emotion.lower() in emotion_style:
-    base_color = emotion_style[current_emotion.lower()]["color"]
-    title_emoji = emotion_style[current_emotion.lower()]["emoji"]
-    # Mood set થઈ ગયા પછી – no animation, solid mood color
-    animation_css = "none"
-    gradient_start = base_color
-    gradient_end = "#0f172a"
-else:
-    # First load – 2 second color changing animation
-    base_color = "#6366F1"
-    title_emoji = "🎵"
-    animation_css = "pulseColors 2s ease-in-out infinite"
-    gradient_start = "#6366F1"
-    gradient_end = "#EC4899"
+            st.subheader("🎧 Recommended Songs:")
+            songs = emotion_to_songs.get(emotion.lower(), [])
 
-# ------------- GLOBAL STYLING + ANIMATIONS ------------- #
-st.markdown(
-    f"""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
-
-html, body {{
-    background: radial-gradient(circle at top, #111827, #020617);
-}}
-
-[data-testid="stAppViewContainer"] {{
-    background: radial-gradient(circle at top, #111827, #020617);
-    color: #E5E7EB;
-    font-family: 'Poppins', system-ui, sans-serif;
-}}
-
-[data-testid="stHeader"] {{
-    background: transparent;
-}}
-
-.main-block {{
-    max-width: 950px;
-    margin: 0 auto;
-}}
-
-#mood-title {{
-    margin-top: 0.3rem;
-    margin-bottom: 0.8rem;
-    display: flex;
-    justify-content: center;
-}}
-
-.mood-title-pill {{
-    padding: 0.8rem 2.8rem;
-    border-radius: 999px;
-    background: linear-gradient(120deg, {gradient_start}, {gradient_end});
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-weight: 800;
-    font-size: 1.35rem;
-    box-shadow: 0 20px 55px rgba(0,0,0,0.55);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-    animation: {animation_css};
-}}
-
-.mood-title-pill span.emoji {{
-    font-size: 1.8rem;
-}}
-
-@keyframes pulseColors {{
-    0% {{
-        filter: hue-rotate(0deg);
-        transform: translateY(0px) scale(1);
-        box-shadow: 0 20px 45px rgba(0,0,0,0.45);
-    }}
-    50% {{
-        filter: hue-rotate(35deg);
-        transform: translateY(-4px) scale(1.03);
-        box-shadow: 0 26px 70px rgba(0,0,0,0.75);
-    }}
-    100% {{
-        filter: hue-rotate(0deg);
-        transform: translateY(0px) scale(1);
-        box-shadow: 0 20px 45px rgba(0,0,0,0.45);
-    }}
-}}
-
-.glass-card {{
-    background: rgba(15,23,42,0.86);
-    border-radius: 26px;
-    padding: 1.8rem 1.7rem 1.5rem;
-    box-shadow:
-        0 18px 45px rgba(0,0,0,0.75),
-        0 0 0 1px rgba(148,163,184,0.18);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(148,163,184,0.28);
-}}
-
-.sub-title {{
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    color: #9CA3AF;
-    margin-bottom: 0.6rem;
-}}
-
-.cam-wrapper {{
-    border-radius: 22px;
-    padding: 0.9rem;
-    background: radial-gradient(circle at top, rgba(55,65,81,0.9), rgba(15,23,42,1));
-    box-shadow: inset 0 0 0 1px rgba(148,163,184,0.35);
-}}
-
-.song-card {{
-    border-radius: 16px;
-    padding: 0.75rem 0.95rem;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(115deg, rgba(15,23,42,0.96), rgba(30,64,175,0.65));
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 10px 28px rgba(15,23,42,0.85);
-    border: 1px solid rgba(148,163,184,0.35);
-    transition: transform 0.18s ease-out, box-shadow 0.18s ease-out, border-color 0.18s ease-out;
-}}
-
-.song-card:hover {{
-    transform: translateY(-3px);
-    box-shadow: 0 18px 40px rgba(15,23,42,0.95);
-    border-color: {base_color};
-}}
-
-.song-name {{
-    font-size: 0.96rem;
-    font-weight: 500;
-    color: #E5E7EB;
-}}
-
-.song-link a {{
-    font-size: 0.83rem;
-    padding: 0.28rem 0.7rem;
-    border-radius: 999px;
-    border: 1px solid rgba(148,163,184,0.7);
-    text-decoration: none !important;
-}}
-
-.song-link a:hover {{
-    border-color: {base_color};
-}}
-
-.emotion-tag {{
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.22rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    background: rgba(15,23,42,0.95);
-    border: 1px solid rgba(148,163,184,0.6);
-    color: #E5E7EB;
-}}
-
-.emotion-dot {{
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    background: {base_color};
-    box-shadow: 0 0 12px {base_color};
-}}
-
-footer {{
-    visibility: hidden;
-}}
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-# ------------- TITLE (NO OLD GREY BAR) ------------- #
-st.markdown(
-    f"""
-<div class="main-block">
-  <div id="mood-title">
-    <div class="mood-title-pill">
-      <span class="emoji">{title_emoji}</span>
-      <span>MOODWAVE AI</span>
-    </div>
-  </div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
-<div class="main-block">
-  <div class="glass-card">
-    <div class="sub-title">Emotion-based music • Smart recommendations</div>
-""",
-    unsafe_allow_html=True,
-)
-
-# ------------- CAMERA + EMOTION DETECTION ------------- #
-with st.container():
-    col1, col2 = st.columns([1.1, 1])
-
-    with col1:
-        st.markdown('<div class="cam-wrapper">', unsafe_allow_html=True)
-        uploaded_image = st.camera_input("📸 Take a picture to detect your mood")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col2:
-        if uploaded_image is not None:
-            img = Image.open(uploaded_image)
-            st.image(img, caption="Your Photo", use_column_width=True)
-
-            img_np = np.array(img.convert("RGB"))
-            emotion = detect_emotion(img_np)
-
-            if emotion:
-                st.session_state.detected_emotion = emotion.lower()
-                style = emotion_style.get(emotion.lower(), {"color": "#6366F1", "emoji": "🎵"})
-                st.markdown(
-                    f"""
-                    <div style="margin-top:0.4rem;">
-                        <span class="emotion-tag">
-                            <span class="emotion-dot"></span>
-                            <span>{style["emoji"]} Detected emotion: <b>{emotion.upper()}</b></span>
-                        </span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+            if not songs:
+                st.info("આ emotion માટે preset songs નથી. Try another mood 🙂")
             else:
-                st.info("Emotion detect નથઈ શક્યું. Try again 🙂")
+                for name, url in songs:
+                    st.markdown(f"- 🎵 [{name}]({url})")
+        else:
+            st.info("Emotion detect નથઈ શક્યું. Try again અથવા નીચે manual mood select કરો.")
 
-# ------------- SONG RECOMMENDATIONS ------------- #
+# -------------------------------------------------------------------
+# MODE 2: Fallback – Manual mood selection (always available)
+# -------------------------------------------------------------------
+st.divider()
+st.subheader("🎚️ Manual Mood Selection (Fallback Mode)")
+
+selected_emotion = st.selectbox(
+    "તમારું mood પસંદ કરો:",
+    options=list(emotion_to_songs.keys()),
+    index=0,
+    format_func=lambda x: x.capitalize()
+)
+
 st.markdown("### 🎧 Recommended Songs")
 
 active_emotion = st.session_state.detected_emotion or "neutral"
