@@ -7,10 +7,13 @@ import time
 # -------------------------------------------------------------
 # Streamlit Page Config
 # -------------------------------------------------------------
-st.set_page_config(
-    page_title="MoodWave AI",
-    page_icon="🎭",
-    layout="wide"
+st.markdown(
+    f"""
+    <div class="main-title">🎭 MoodWave AI</div>
+    <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
+    """,
+    unsafe_allow_html=True,
+)
 )
 
 # -------------------------------------------------------------
@@ -288,14 +291,12 @@ def detect_emotion(image):
 # Header
 st.markdown(
     """
-    <div class="glass-soft" style="margin-bottom: 1rem; display:flex; align-items:center; justify-content:space-between; gap: 0.75rem;">
-        <div>
-            <div class="title-glow">🎭 MoodWave AI</div>
-            <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
+    <div style="text-align:center; margin-bottom: 1.2rem;">
+        <div class="main-title" style="font-weight: 900;">
+            🎭 MoodWave AI
         </div>
-        <div style="display:flex; align-items:center; gap:0.6rem;">
-            <div class="pulse-dot"></div>
-            <span class="hint-label">Live emotion-powered recommendations</span>
+        <div class="subtitle" style="font-weight: 700; margin-top: 0.25rem;">
+            <b>Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</b>
         </div>
     </div>
     """,
