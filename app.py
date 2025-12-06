@@ -40,162 +40,77 @@ except Exception:
 # -------------------------------------------------------------
 # Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
 # -------------------------------------------------------------
-st.markdown(
-    """
-    <style>
-    /* 1. Page and Layout Setup */
-    .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-    
-    [data-testid="stAppViewContainer"] {
-        background: linear-gradient(120deg, #1e293b, #0f172a, #020617);
-        background-size: 300% 300%;
-        animation: gradientMove 12s ease infinite;
-    }
+    /* ---------------------- GOLD STYLES FOR INPUT METHOD & CAMERA ---------------------- */
 
-    @keyframes gradientMove {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    .stApp {
-        color: white;
-    }
-
-    /* Title Glow */
-    .main-title {
-        font-size: 2.4rem;
+    /* Gold label for "Choose input method:" and "📸 Take a picture" */
+    .gold-label {
+        color: #facc15;
         font-weight: 800;
-        color: #e5e7eb;
-        text-shadow: 0 0 15px rgba(56, 189, 248, 0.5), 0 0 5px rgba(56, 189, 248, 0.3);
-    }
-    
-    .subtitle {
-        font-size: 0.95rem;
-        color: #e5e7eb;
-        opacity: 0.85;
-    }
-    
-    /* Glass Card Container */
-    .glass-card {
-        background: rgba(15, 23, 42, 0.8);
-        border-radius: 20px;
-        padding: 1.5rem;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
-        backdrop-filter: blur(18px);
+        font-size: 1.05rem;
+        text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+        margin-bottom: 0.25rem;
     }
 
-    /* Emotion Badge (Chip) */
-    .emotion-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.35rem 0.85rem;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #f97316, #fb7185);
-        color: white;
-        font-size: 0.9rem;
-        font-weight: 600;
-        animation: popIn 0.5s ease-out;
-        margin-bottom: 1rem;
-    }
-
-    @keyframes popIn {
-        0% { transform: scale(0.6); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Song Card List Item */
-    .song-card {
-        margin-bottom: 0.6rem;
-        border-radius: 14px;
-        padding: 0.8rem 1rem;
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease, background 0.18s ease;
-    }
-
-    .song-card:hover {
-        transform: translateY(-2px) scale(1.01);
-        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
-        border-color: #38bdf8;
-        background: rgba(15, 23, 42, 0.95);
-    }
-
-    .song-title {
-        font-size: 0.95rem;
-        color: #e5e7eb;
-        font-weight: 500;
-    }
-
-    .song-link a {
-        font-size: 0.85rem;
-        text-decoration: none;
-        font-weight: 600;
-        color: #38bdf8;
-    }
-
-    .song-link a:hover {
-        text-decoration: underline;
-    }
-    
-    /* Fancy button tweak */
-    .stButton>button {
-        background: linear-gradient(135deg, #f97316, #ec4899);
-        color: white;
-        border-radius: 999px;
-        border: none;
-        padding: 0.45rem 1.3rem;
-        font-weight: 600;
-        font-size: 0.9rem;
-        box-shadow: 0 10px 25px rgba(236, 72, 153, 0.55);
-        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-    }
-
-    .stButton>button:hover {
-        transform: translateY(-1px) scale(1.02);
-        box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
-        filter: brightness(1.05);
-    }
-    
-    /* Widget Labels */
-    [data-testid="stWidgetLabel"] > label {
-        color: white !important;
-        font-size: 1.1rem !important;
-        font-weight: 700 !important;
-    }
-
-    /* Hint/Footer Label */
-    .hint-label {
-        font-size: 1rem;
-        color: white;
-        font-weight: 500;
-        opacity: 1;
-    }
-
-    /* Quick mood shortcut badge style */
-    .mood-chip {
+    .gold-label.camera-gold {
         display: inline-block;
-        padding: 0.4rem 0.9rem;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.6);
-        background: rgba(15, 23, 42, 0.7);
-        font-size: 0.85rem;
-        margin: 0.15rem;
+        animation: goldPulse 1.4s ease-in-out infinite alternate;
     }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+
+    @keyframes goldPulse {
+        0% {
+            text-shadow: 0 0 6px rgba(250, 204, 21, 0.4);
+        }
+        100% {
+            text-shadow: 0 0 16px rgba(250, 204, 21, 0.95);
+        }
+    }
+
+    /* RADIO: 📷 Camera / 📁 Upload Photo – make them gold + animate when selected */
+    [data-testid="stRadio"] div[role="radiogroup"] > div {
+        color: #facc15 !important;
+        font-weight: 700;
+    }
+
+    /* Selected radio option – background + glow when clicked */
+    [data-testid="stRadio"] div[role="radiogroup"] > div:has(input:checked) {
+        background: rgba(250, 204, 21, 0.16);
+        border-radius: 999px;
+        padding: 0.15rem 0.7rem;
+        animation: goldSelect 0.25s ease-out;
+        box-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
+    }
+
+    [data-testid="stRadio"] div[role="radiogroup"] > div:has(input:checked) span {
+        color: #fef9c3 !important;
+    }
+
+    @keyframes goldSelect {
+        from { box-shadow: 0 0 0 rgba(250, 204, 21, 0.0); }
+        to   { box-shadow: 0 0 14px rgba(250, 204, 21, 0.8); }
+    }
+
+    /* CAMERA: "Take Photo" button – gold + hover/click animation */
+    [data-testid="stCameraInput"] button {
+        color: #facc15 !important;
+        border: 1px solid #facc15 !important;
+        background: transparent !important;
+        font-weight: 700;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 0 0 rgba(250, 204, 21, 0.0);
+    }
+
+    [data-testid="stCameraInput"] button:hover {
+        background: rgba(250, 204, 21, 0.18) !important;
+        color: #fef9c3 !important;
+        transform: translateY(-1px) scale(1.02);
+        box-shadow: 0 0 18px rgba(250, 204, 21, 0.7);
+    }
+
+    [data-testid="stCameraInput"] button:active {
+        transform: scale(0.97);
+        box-shadow: 0 0 24px rgba(250, 204, 21, 0.9);
+    }
+
 
 # -------------------------------------------------------------
 # Data: Emotion → Songs
