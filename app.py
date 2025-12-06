@@ -507,13 +507,7 @@ st.markdown(
         border: 1px solid rgba(250,204,21, 0.3);
     }
     
-    /* ---------------------- CREATOR BUTTON STYLING (TOP RIGHT - NEW) ---------------------- */
-    /* Container to ensure alignment */
-    .top-right-bar {
-        position: relative; /* Streamlit does not easily support fixed/absolute, but this sets context */
-        width: 100%;
-        margin-bottom: 1rem;
-    }
+    /* ---------------------- CREATOR BUTTON STYLING (TOP RIGHT - UPDATED) ---------------------- */
     
     .creator-connect-header {
         font-size: clamp(0.7rem, 1.5vw, 0.9rem);
@@ -530,26 +524,32 @@ st.markdown(
         100% { transform: scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
     }
     
-    /* Styling for the small top-right buttons */
-    .top-right-creator-btn .stButton>button {
+    /* Base style for custom link buttons */
+    .custom-link-btn {
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
+        width: 100%;
         background: linear-gradient(135deg, #38bdf8, #1d4ed8);
-        color: white;
+        color: white !important;
         border: none;
         padding: 0.3rem 0.6rem;
-        font-size: clamp(0.7rem, 1.5vw, 0.8rem); /* Responsive font size for button text */
+        font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+        font-weight: 600;
         border-radius: 999px;
         animation: creatorPulse 2s ease-in-out infinite;
         transition: all 0.2s;
+        cursor: pointer;
     }
-
-    .top-right-creator-btn .stButton>button:hover {
+    
+    .custom-link-btn:hover {
         transform: scale(1.05);
         filter: brightness(1.2);
     }
 
     /* Streamlit specific tweak for column responsiveness */
     @media (max-width: 600px) {
-        .top-right-creator-btn .stButton>button {
+        .custom-link-btn {
             padding: 0.2rem 0.4rem;
         }
     }
@@ -656,17 +656,15 @@ with header_row[1]:
     )
 
 # 2. Buttons are pushed right using columns
-button_row = st.columns([6, 1.5, 1.5]) 
+# Use a slightly smaller empty column to constrain buttons better on desktop
+button_row = st.columns([7, 1.2, 1.2]) 
 with button_row[1]:
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    # use_container_width=True is added for better mobile scaling, forcing the button to fill the constrained column space
-    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", key="top_me_link", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Changed st.link_button to custom HTML anchor tag for stability
+    st.markdown(f'<a href="{MY_LINKEDIN_URL}" target="_blank" class="custom-link-btn">Me 🧑‍💻</a>', unsafe_allow_html=True)
     
 with button_row[2]:
-    st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", key="top_dhruv_link", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Changed st.link_button to custom HTML anchor tag for stability
+    st.markdown(f'<a href="{DHRUV_LINKEDIN_URL}" target="_blank" class="custom-link-btn">Dhruv 🧑‍💻</a>', unsafe_allow_html=True)
 
 st.markdown("---") # Separator before the main columns start
 # ----------------------- END TOP RIGHT CREATOR LINKS -----------------------
