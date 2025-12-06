@@ -16,15 +16,13 @@ st.markdown(
 )
 
 
-
-
 # -------------------------------------------------------------
 # Dependency Check (Handle DeepFace/TensorFlow loading errors gracefully)
 # -------------------------------------------------------------
 DEEPFACE_AVAILABLE = True
 try:
     # A quick import test to see if DeepFace is callable
-    import deepface 
+    import deepface
 except ImportError:
     DEEPFACE_AVAILABLE = False
 except Exception:
@@ -32,6 +30,7 @@ except Exception:
 
 # -------------------------------------------------------------
 # Custom CSS – Animated Gradient BG, Glassmorphism Cards, Hover Effects
+# Includes updates for label size and color.
 # -------------------------------------------------------------
 st.markdown(
     """
@@ -101,6 +100,7 @@ st.markdown(
         font-size: 0.9rem;
         font-weight: 600;
         animation: popIn 0.5s ease-out;
+        margin-bottom: 1rem; /* Added margin for spacing */
     }
 
     @keyframes popIn {
@@ -164,10 +164,24 @@ st.markdown(
         filter: brightness(1.05);
     }
     
-    /* Hint/Footer Labels */
+    /* ------------------------------------------------------------- */
+    /* UPDATED STYLES for Labels and Hint Text */
+    /* ------------------------------------------------------------- */
+
+    /* Target the labels for Camera Input and Selectbox: "📸 Take a picture" and "Choose your mood:" */
+    /* Streamlit uses data-testid="stWidgetLabel" for widget labels */
+    [data-testid="stWidgetLabel"] > label {
+        color: white !important; /* Force color to white */
+        font-size: 1.1rem !important; /* Increased size */
+        font-weight: 700 !important;
+    }
+
+    /* Update Hint/Footer Label: "If camera / detection fails..." */
     .hint-label {
-        font-size: 0.8rem;
-        color: #9ca3af;
+        font-size: 1rem; /* Increased from 0.8rem */
+        color: white; /* Changed from #9ca3af to white */
+        font-weight: 500;
+        opacity: 1; /* Ensure full white visibility */
     }
 
     </style>
@@ -181,7 +195,7 @@ st.markdown(
 emotion_to_songs = {
     'happy': [
         ("Aankh Marey – Simmba", "https://open.spotify.com/track/63MvWd6T6yoS7h4AJ4Hjrm"),
-        ("Nashe Si Chadh Gayi – Befikre", "https://open.spotify.com/track/3uoQUnKEedaeLKxUeVaJwj"),
+        ("Nashe Si Chadh गई – Befikre", "https://open.spotify.com/track/3uoQUnKEedaeLKxUeVaJwj"),
         ("Happy – Pharrell Williams", "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH"),
         ("Can’t Stop the Feeling – Justin Timberlake", "https://open.spotify.com/track/6JV2JOEocMgcZxYSZelKcc"),
         ("Hokaliyo", "https://open.spotify.com/artist/535ascn4f13hFo2kjCodKE"),
@@ -259,6 +273,9 @@ emotion_emoji = {
 
 # ----------------------- Emotion Detection Function -----------------------
 def detect_emotion(image):
+    if not DEEPFACE_AVAILABLE:
+        st.error("DeepFace (or its dependencies) could not be loaded. Please check your environment.")
+        return None
     try:
         result = DeepFace.analyze(
             img_path=image,
@@ -309,10 +326,10 @@ if detected_emotion:
     emo_key = detected_emotion.lower()
     emo_icon = emotion_emoji.get(emo_key, "🎭")
 
-    # Emotion chip
+    # Emotion chip (using the defined .emotion-badge class)
     st.markdown(
         f"""
-        <div class="emotion-chip chip-{emo_key}">
+        <div class="emotion-badge">
             <span>{emo_icon}</span>
             <span>{emo_key.upper()}</span>
         </div>
@@ -324,14 +341,15 @@ if detected_emotion:
 
     songs = emotion_to_songs.get(emo_key, [])
     for name, url in songs:
+        # Song card (using the defined .song-card class)
         st.markdown(
             f"""
-            <div class="song-pill song-{emo_key}">
-                <div class="song-left">
+            <div class="song-card">
+                <div class="song-title">
                     <span>🎵</span>
                     <span>{name}</span>
                 </div>
-                <div class="song-right">
+                <div class="song-link">
                     <a href="{url}" target="_blank">Play on Spotify ↗</a>
                 </div>
             </div>
@@ -352,16 +370,17 @@ st.markdown(
 selected_emotion = st.selectbox(
     "Choose your mood:",
     options=list(emotion_to_songs.keys()),
-    index=5,
+    index=0, # Changed index to 0 (happy) as it's a good default
     format_func=lambda x: x.capitalize()
 )
 
 if st.button("🎧 Show Songs for this Mood"):
     emo_icon = emotion_emoji.get(selected_emotion, "🎭")
 
+    # Emotion chip (using the defined .emotion-badge class)
     st.markdown(
         f"""
-        <div class="emotion-chip chip-{selected_emotion}">
+        <div class="emotion-badge">
             <span>{emo_icon}</span>
             <span>{selected_emotion.upper()}</span>
         </div>
@@ -373,14 +392,15 @@ if st.button("🎧 Show Songs for this Mood"):
 
     songs = emotion_to_songs.get(selected_emotion, [])
     for name, url in songs:
+        # Song card (using the defined .song-card class)
         st.markdown(
             f"""
-            <div class="song-pill song-{selected_emotion}">
-                <div class="song-left">
+            <div class="song-card">
+                <div class="song-title">
                     <span>🎵</span>
                     <span>{name}</span>
                 </div>
-                <div class="song-right">
+                <div class="song-link">
                     <a href="{url}" target="_blank">Play on Spotify ↗</a>
                 </div>
             </div>
@@ -389,4 +409,3 @@ if st.button("🎧 Show Songs for this Mood"):
         )
 
     st.markdown("</div>", unsafe_allow_html=True)
-
