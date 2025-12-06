@@ -36,7 +36,7 @@ st.markdown(
     /* 1. Page and Layout Setup */
     /* Remove default padding */
     .block-container {
-        padding-top: 1.5rem;
+        padding-top: 1.5 rem;
         padding-bottom: 1.5rem;
         padding-left: 2rem;
         padding-right: 2rem;
