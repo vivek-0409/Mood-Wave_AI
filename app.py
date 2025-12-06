@@ -485,6 +485,6 @@ with col_right:
                 """,
                 unsafe_allow_html=True,
             )
-        <p> </p>    
+          <p><div></div></p>      
         st.markdown("</div>", unsafe_allow_html=True)
 
