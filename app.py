@@ -489,6 +489,23 @@ def detect_emotion(image):
 
 # ----------------------- SIDEBAR -----------------------
 with st.sidebar:
+    # --- LANGUAGE BUTTONS (MOVED TO SIDEBAR) ---
+    st.markdown("### 🌐 Select Language")
+    # Use smaller labels for better fit in the narrow sidebar columns
+    lang_cols_sb = st.columns(3)
+    with lang_cols_sb[0]:
+        if st.button("EN", key="btn_en"):
+            set_lang("en")
+    with lang_cols_sb[1]:
+        if st.button("HI", key="btn_hi"):
+            set_lang("hi")
+    with lang_cols_sb[2]:
+        if st.button("GU", key="btn_gu"):
+            set_lang("gu")
+    
+    st.markdown("---")
+    # --- END LANGUAGE BUTTONS ---
+
     st.markdown(f"## 🎭 {L('sidebar_title')}")
     st.markdown(L("sidebar_desc"))
     if not DEEPFACE_AVAILABLE:
@@ -504,25 +521,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(f"👨‍💻 **{L('sidebar_creators')}**\n\n- You\n- Dhruv")
 
-# ----------------------- LANGUAGE BUTTONS (TOP) -----------------------
-lang_cols = st.columns(3)
-with lang_cols[0]:
-    st.markdown('<div class="lang-btn-container">', unsafe_allow_html=True)
-    if st.button("English", key="btn_en"):
-        set_lang("en")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with lang_cols[1]:
-    st.markdown('<div class="lang-btn-container">', unsafe_allow_html=True)
-    if st.button("हिंदी", key="btn_hi"):
-        set_lang("hi")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with lang_cols[2]:
-    st.markdown('<div class="lang-btn-container">', unsafe_allow_html=True)
-    if st.button("ગુજરાતી", key="btn_gu"):
-        set_lang("gu")
-    st.markdown('</div>', unsafe_allow_html=True)
+# Removed the old language button block from the main content area
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -634,6 +633,7 @@ with col_left:
         songs = emotion_to_songs.get(emo_key, [])
         for idx, (name, url) in enumerate(songs):
             delay = idx * 0.15  # Stagger delay for each card
+            # The CSS 'fadeInUp' animation is applied here via the style attribute
             st.markdown(
                 f"""
                 <div class="song-card" style="animation-delay: {delay}s;">
@@ -692,6 +692,7 @@ with col_right:
         songs = emotion_to_songs.get(selected_quick_mood, [])
         for idx, (name, url) in enumerate(songs):
             delay = idx * 0.15 # Stagger delay for each card
+            # The CSS 'fadeInUp' animation is applied here via the style attribute
             st.markdown(
                 f"""
                 <div class="song-card" style="animation-delay: {delay}s;">
