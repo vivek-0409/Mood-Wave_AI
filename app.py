@@ -269,17 +269,7 @@ def detect_emotion(image):
         return None
 
 # ----------------------- UI TITLE -----------------------
-st.markdown(
-    """
-    <div class='title-animate'>
-        🎭 MoodWave AI – Emotion Based Song Recommender
-    </div>
-    <div class="subtitle">
-        Capture your selfie, let AI read your mood, and enjoy songs that match your vibes.
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+
 
 st.markdown("<br>", unsafe_allow_html=True)
 
