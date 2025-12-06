@@ -680,15 +680,7 @@ with col_left:
         st.markdown("</div>", unsafe_allow_html=True)
 
 with col_right:
-    # ----------------------- CREATOR LINKS (NEW MAIN PAGE BUTTONS) -----------------------
-    st.markdown("### 🔗 Connect with Creators")
-    link_cols = st.columns(2)
-    with link_cols[0]:
-        # Using link_button for better visibility on the main page
-        st.link_button("Me (Vivekkumar) 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
-    with link_cols[1]:
-        st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
-    st.markdown("---")
+   
     
     # ----------------------- QUICK MOOD SHORTCUTS -----------------------
     st.markdown(f"### {L('quick_mood_title')}")
@@ -747,6 +739,17 @@ with col_right:
             )
         st.markdown("</div>", unsafe_allow_html=True)
 
+
+         # ----------------------- CREATOR LINKS (NEW MAIN PAGE BUTTONS) -----------------------
+    st.markdown("### 🔗 Connect with Creators")
+    link_cols = st.columns(2)
+    with link_cols[0]:
+        # Using link_button for better visibility on the main page
+        st.link_button("Me (Vivekkumar) 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
+    with link_cols[1]:
+        st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
+    st.markdown("---")
+
 # ----------------------- CLOSING MESSAGE (Thank You) -----------------------
 st.markdown("---") # Add a separator before the final message
 st.markdown(
@@ -761,3 +764,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
