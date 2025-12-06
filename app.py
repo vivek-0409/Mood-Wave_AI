@@ -146,7 +146,7 @@ st.markdown(
         text-decoration: underline;
     }
     
-    /* Generic button style (Used for the default 'Take a picture' button) */
+    /* Fancy button tweak */
     .stButton>button {
         background: linear-gradient(135deg, #f97316, #ec4899);
         color: white;
@@ -163,46 +163,6 @@ st.markdown(
         transform: translateY(-1px) scale(1.02);
         box-shadow: 0 14px 30px rgba(236, 72, 153, 0.75);
         filter: brightness(1.05);
-    }
-
-    /* ------------------------------------------------------------- */
-    /* NEW: Specific Style for the 'Show Songs for this Mood' button */
-    /* ------------------------------------------------------------- */
-    /* This targets the button based on its text content to apply a different style */
-    
-    /* Target the button container based on its text */
-    div[data-testid="stButton"] > button:has(span:contains("Show Songs for this Mood")) {
-        background: linear-gradient(135deg, #ef4444, #dc2626); /* Default Red Gradient */
-        color: white;
-        border-radius: 999px;
-        border: none;
-        padding: 0.45rem 1.3rem;
-        font-weight: 600;
-        font-size: 0.9rem;
-        box-shadow: 0 10px 25px rgba(220, 38, 38, 0.55);
-        transition: all 0.2s ease-out; /* Smoother transition */
-    }
-
-    /* Hover effect: Animated color change on hover/click for the red button */
-    div[data-testid="stButton"] > button:has(span:contains("Show Songs for this Mood")):hover {
-        transform: translateY(-2px) scale(1.02);
-        /* Rainbow/Gradient effect on hover */
-        background: linear-gradient(135deg, #ff00ff, #00ffff, #ffff00, #ff0000);
-        background-size: 400% 400%;
-        animation: colorShift 1.5s ease infinite;
-        box-shadow: 0 15px 40px rgba(255, 0, 0, 0.8);
-    }
-
-    /* Click effect (Active state) for the red button */
-    div[data-testid="stButton"] > button:has(span:contains("Show Songs for this Mood")):active {
-        transform: translateY(0) scale(1.0);
-        filter: brightness(0.9);
-    }
-
-    @keyframes colorShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
     }
     
     /* ------------------------------------------------------------- */
