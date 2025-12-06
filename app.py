@@ -15,6 +15,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown(
+    f"""
+    <div class="main-title">🎭 MoodWave AI</div>
+    <div class="subtitle">Capture your mood &amp; instantly get handpicked songs that vibe with your emotion.</div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
 # -------------------------------------------------------------
 # Dependency Check (Handle DeepFace/TensorFlow loading errors gracefully)
 # -------------------------------------------------------------
