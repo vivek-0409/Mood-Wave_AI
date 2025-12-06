@@ -5,6 +5,12 @@ import numpy as np
 import time
 
 # -------------------------------------------------------------
+# LinkedIn URLs (New Constants)
+# -------------------------------------------------------------
+MY_LINKEDIN_URL = "https://www.linkedin.com/in/parekh-vivekkumar-gp-kheda-it-dte-03b3572b6?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B%2BFmiVhRSQcWTHq7oN7aIkA%3D%3D"
+DHRUV_LINKEDIN_URL = "https://www.linkedin.com/in/dhruvdave2807?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BM7UvANbjQO%2BG%2BRNnFvfO6Q%3D%3D"
+
+# -------------------------------------------------------------
 # Streamlit Page Config (should be before any other Streamlit call)
 # -------------------------------------------------------------
 st.set_page_config(
@@ -538,7 +544,10 @@ with st.sidebar:
     st.markdown(L("sidebar_how_points"))
 
     st.markdown("---")
-    st.markdown(f"👨‍💻 **{L('sidebar_creators')}**\n\n- You\n- Dhruv")
+    st.markdown(f"👨‍💻 **{L('sidebar_creators')}**")
+    # Updated: Added LinkedIn links to sidebar creator names
+    st.markdown(f"- [Me (Vivekkumar)]({MY_LINKEDIN_URL})")
+    st.markdown(f"- [Dhruv]({DHRUV_LINKEDIN_URL})")
 
 # Removed the old language button block from the main content area
 
@@ -671,6 +680,16 @@ with col_left:
         st.markdown("</div>", unsafe_allow_html=True)
 
 with col_right:
+    # ----------------------- CREATOR LINKS (NEW MAIN PAGE BUTTONS) -----------------------
+    st.markdown("### 🔗 Connect with Creators")
+    link_cols = st.columns(2)
+    with link_cols[0]:
+        # Using link_button for better visibility on the main page
+        st.link_button("Me (Vivekkumar) 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
+    with link_cols[1]:
+        st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
+    st.markdown("---")
+    
     # ----------------------- QUICK MOOD SHORTCUTS -----------------------
     st.markdown(f"### {L('quick_mood_title')}")
     st.markdown(
