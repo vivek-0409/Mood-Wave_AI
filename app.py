@@ -83,21 +83,57 @@ st.markdown(
 
     /* ---------------- GOLD LABEL + ANIMATION ---------------- */
 
-    /* All widget labels (like "Choose input method:", "📸 Take a picture") */
-    [data-testid="stWidgetLabel"] > label {
-        color: #facc15 !important;   /* gold */
-        font-size: 1.1rem !important;
-        font-weight: 700 !important;
-        text-shadow: 0 0 10px rgba(250, 204, 21, 0.65);
-        transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.15s ease;
+    /* ---------------------- GOLD CAMERA LABEL & BUTTON ---------------------- */
+
+    /* Custom gold label text just for "📸 Take a picture" */
+    .camera-label-gold {
+        color: #facc15;               /* gold */
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+        cursor: pointer;
+        text-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+        animation: goldPulse 1.4s ease-in-out infinite alternate;
     }
 
-    /* Click / tap animation on label */
-    [data-testid="stWidgetLabel"] > label:active {
-        color: #fde047 !important;  /* lighter gold */
-        text-shadow: 0 0 18px rgba(250, 250, 110, 0.9);
-        transform: scale(0.97);
+    .camera-label-gold:hover {
+        color: #fde68a;  /* lighter gold on hover */
+        text-shadow: 0 0 16px rgba(250, 204, 21, 0.9);
     }
+
+    @keyframes goldPulse {
+        0% {
+            text-shadow: 0 0 6px rgba(250, 204, 21, 0.4);
+        }
+        100% {
+            text-shadow: 0 0 16px rgba(250, 204, 21, 0.95);
+        }
+    }
+
+    /* Style ONLY the camera "Take Photo" button */
+    [data-testid="stCameraInput"] button {
+        color: #facc15 !important;                        /* gold text */
+        border: 1px solid #facc15 !important;
+        background: transparent !important;
+        font-weight: 700;
+        transition: all 0.22s ease-in-out;
+        box-shadow: 0 0 0 rgba(250, 204, 21, 0.0);
+    }
+
+    /* Hover effect */
+    [data-testid="stCameraInput"] button:hover {
+        background: rgba(250, 204, 21, 0.18) !important;
+        color: #fef9c3 !important;
+        transform: translateY(-1px) scale(1.02);
+        box-shadow: 0 0 18px rgba(250, 204, 21, 0.7);
+    }
+
+    /* Click animation (on press) */
+    [data-testid="stCameraInput"] button:active {
+        transform: scale(0.97);
+        box-shadow: 0 0 26px rgba(250, 204, 21, 0.9);
+    }
+
 
     /* ---------------- RADIO OPTIONS (📷 Camera / 📁 Upload Photo) ---------------- */
 
@@ -393,15 +429,23 @@ with col_left:
 
     uploaded_image = None
 
-    if input_method == "📷 Camera":
-        uploaded_image = st.camera_input("📸 Take a picture")
-    else:
-        uploaded_file = st.file_uploader("📁 Upload a photo", type=["png", "jpg", "jpeg"])
-        if uploaded_file is not None:
-            uploaded_image = uploaded_file
+   # ----------------------- CAMERA -----------------------
+# Custom gold label text
+st.markdown(
+    """
+    <div class="camera-label-gold">
+        📸 Take a picture
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-    detected_emotion = None
-    detected_confidence = None
+uploaded_image = st.camera_input(
+    "",               # empty label
+    key="camera_input_main",
+    label_visibility="collapsed"  # hide default label text
+)
+
 
     # ----------------------- AUTO MODE (DeepFace) -----------------------
     if uploaded_image is not None and DEEPFACE_AVAILABLE:
