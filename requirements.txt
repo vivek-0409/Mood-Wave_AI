@@ -1,9 +1,7 @@
-opencv-python-headless
-pillow
-deepface
-streamlit
-
-
-# step 1
-# emotion_app\tf-env\Scripts\Activate.ps1
-
+streamlit==1.52.1
+deepface==0.0.96
+tensorflow==2.16.1
+tf-keras==2.16.0
+opencv-python-headless==4.8.1.78
+pillow==11.0.0
+numpy==1.26.4
