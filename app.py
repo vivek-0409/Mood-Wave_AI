@@ -75,7 +75,7 @@ TEXT = {
     "sidebar_desc": {
         "en": "Capture your mood using your camera or a photo, and instantly get songs that vibe with your emotion.",
         "hi": "कैमरा या फोटो से अपना मूड कैप्चर करें और तुरंत अपने इमोशन से मेल खाते गाने पाएं।",
-        "gu": "કેમેરા અથવા ફોટાથી તમારો મૂડ કેપ્ચર કરો અને તરત જ તમારા ઈમોશન પ્રમાણે ગીતો મેળવો.",
+        "gu": "કેમેરા અથવા ફોટાથી તમારો મૂડ કેપ્ચર કરો અને તરત જ તમારા ઈમોશન પ્રમાણે ગીતો મેળવો。",
     },
     "sidebar_how_title": {
         "en": "How it works",
@@ -120,7 +120,7 @@ TEXT = {
     "manual_hint": {
         "en": "If camera / detection fails, choose a mood and explore songs manually.",
         "hi": "अगर कैमरा / डिटेक्शन फेल हो जाए, तो मूड चुनें और मैन्युअली गाने देखें।",
-        "gu": "જો કેમેરા / ડિટેક્શન નિષ્ફળ જાય, તો મૂડ પસંદ કરો અને મેન્યુઅલી ગીતો જુઓ.",
+        "gu": "જો કેમેરા / ડિટેક્શન નિષ્ફળ જાય, તો મૂડ પસંદ કરો અને મેન્યુઅલી ગીતો જુઓ。",
     },
     "quick_mood_title": {
         "en": "🎧 Quick Mood Shortcuts (Manual Mood Selection)",
@@ -222,16 +222,46 @@ emotion_emoji = {
     "disgust": "🤢",
 }
 
+# ----------------------- Emotion Detection Function -----------------------
+def detect_emotion(image):
+    """
+    Returns (dominant_emotion, confidence_percent) or (None, None) on failure.
+    """
+    if not DEEPFACE_AVAILABLE:
+        st.error("DeepFace (or its dependencies) could not be loaded. Please check your environment.")
+        return None, None
+
+    try:
+        result = DeepFace.analyze(
+            img_path=image,
+            actions=['emotion'],
+            enforce_detection=False
+        )
+        # DeepFace returns a list in newer versions
+        r0 = result[0] if isinstance(result, list) else result
+        dominant = r0.get('dominant_emotion', None)
+        confidence = None
+        if dominant and 'emotion' in r0 and isinstance(r0['emotion'], dict):
+            # score for that emotion
+            score = r0['emotion'].get(dominant)
+            if score is not None:
+                confidence = float(score)
+        return dominant, confidence
+    except Exception as e:
+        st.error(f"Error detecting emotion: {e}")
+        return None, None
+
 # ----------------------- Custom CSS (Updated for Creator Buttons) -----------------------
 st.markdown(
     """
     <style>
     /* 1. Page and Layout Setup */
     .block-container {
+        /* Ensure padding is flexible */
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;
-        padding-left: 2rem;
-        padding-right: 2rem;
+        padding-left: 2vw; /* Use viewport units for flexibility */
+        padding-right: 2vw; /* Use viewport units for flexibility */
     }
     
     [data-testid="stAppViewContainer"] {
@@ -250,16 +280,16 @@ st.markdown(
         color: white;
     }
 
-    /* Title Glow */
+    /* Title Glow - Use vw for better scaling on mobile */
     .main-title {
-        font-size: 2.4rem;
+        font-size: clamp(1.8rem, 4vw, 2.8rem); /* Flexible font size */
         font-weight: 800;
         color: #e5e7eb;
         text-shadow: 0 0 15px rgba(56, 189, 248, 0.5), 0 0 5px rgba(56, 189, 248, 0.3);
     }
     
     .subtitle {
-        font-size: 0.95rem;
+        font-size: clamp(0.8rem, 2vw, 1rem);
         color: #e5e7eb;
         opacity: 0.85;
     }
@@ -477,14 +507,21 @@ st.markdown(
         border: 1px solid rgba(250,204,21, 0.3);
     }
     
-    /* ---------------------- CREATOR BUTTON STYLING (NEW) ---------------------- */
+    /* ---------------------- CREATOR BUTTON STYLING (TOP RIGHT - NEW) ---------------------- */
+    /* Container to ensure alignment */
+    .top-right-bar {
+        position: relative; /* Streamlit does not easily support fixed/absolute, but this sets context */
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
     .creator-connect-header {
-        font-size: 0.9rem;
+        font-size: clamp(0.7rem, 1.5vw, 0.9rem);
         font-weight: 700;
-        color: #38bdf8; /* Cyan/Blue */
+        color: #38bdf8;
         text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
         text-align: right;
-        margin-bottom: 5px; /* Spacing above buttons */
+        margin-bottom: 5px;
     }
     
     @keyframes creatorPulse {
@@ -495,11 +532,11 @@ st.markdown(
     
     /* Styling for the small top-right buttons */
     .top-right-creator-btn .stButton>button {
-        background: linear-gradient(135deg, #38bdf8, #1d4ed8); /* Blue gradient */
+        background: linear-gradient(135deg, #38bdf8, #1d4ed8);
         color: white;
         border: none;
         padding: 0.3rem 0.6rem;
-        font-size: 0.8rem;
+        font-size: clamp(0.7rem, 1.5vw, 0.8rem); /* Responsive font size for button text */
         border-radius: 999px;
         animation: creatorPulse 2s ease-in-out infinite;
         transition: all 0.2s;
@@ -509,93 +546,17 @@ st.markdown(
         transform: scale(1.05);
         filter: brightness(1.2);
     }
+
+    /* Streamlit specific tweak for column responsiveness */
+    @media (max-width: 600px) {
+        .top-right-creator-btn .stButton>button {
+            padding: 0.2rem 0.4rem;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
-# -------------------------------------------------------------
-# Data: Emotion → Songs
-# -------------------------------------------------------------
-emotion_to_songs = {
-    'happy': [
-        ("Aankh Marey – Simmba", "https://open.spotify.com/track/63MvWd6T6yoS7h4AJ4Hjrm"),
-        ("Nashe Si Chadh गई – Befikre", "https://open.spotify.com/track/3uoQUnKEedaeLKxUeVaJwj"),
-        ("Happy – Pharrell Williams", "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH"),
-        ("Can’t Stop the Feeling – Justin Timberlake", "https://open.spotify.com/track/6JV2JOEocMycZxYSZelKcc"),
-        ("Hokaliyo", "https://open.spotify.com/artist/535ascn4f13hFo2kjCodKE"),
-        ("Vaagyo Re Dhol – Hellaro", "https://open.spotify.com/track/3GSyZg9iVdj1WjKzBcLakX"),
-        ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
-    ],
-
-    'sad': [
-        ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
-        ("Channa Mereya – Arijit Singh", "https://open.spotify.com/track/0H2iJVgorRR0ZFgRqGUjUM"),
-        ("Tujhe Kitna Chahne Lage – Kabir Singh", "https://open.spotify.com/track/3dYD57lRAUcMHufyqn9GcI"),
-        ("Let Her Go – Passenger", "https://open.spotify.com/track/0JmiBCpWc1IAc0et7Xm7FL"),
-        ("Someone Like You – Adele", "https://open.spotify.com/track/4kflIGfjdZJW4ot2ioixTB"),
-        ("Mane Yaad Ave – Parthiv Gohil", "https://open.spotify.com/track/1JVAoIO4NtjlejraxemhLh"),
-        ("Chand Ne Kaho – Jigardan Gadhavi", "https://open.spotify.com/track/6ci9DNOBLvA7jVDkMYf5Df"),
-    ],
-
-    'angry': [
-        ("Zinda – Bhaag Milkha Bhaag", "https://open.spotify.com/track/6Zo8diPZAjkUH4rWDMgeiE"),
-        ("Sultan Title Track", "https://open.spotify.com/track/3LJhJG3EsmhCq9bNn047lu"),
-        ("Believer – Imagine Dragons", "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP"),
-        ("Lose Yourself – Eminem", "https://open.spotify.com/track/7MJQ9Nfxzh8LPZ9e9u68Fq"),
-        ("Rag Rag Mein – Kirtidan Gadhvi", "https://open.spotify.com/artist/7odYFkW15De3A7aAuk5x9h"),
-        ("Jode Tame Rahejo – Gujarati Garba", "https://open.spotify.com/track/3ByO0k09IsJPqAGncEVuYQ"),
-    ],
-
-    'surprise': [
-        ("Senorita – ZNMD", "https://open.spotify.com/track/6b8zsc3BxT59Yg62wjt7qA"),
-        ("Odhani – Made In China", "https://open.spotify.com/track/2q0V50aNlI1RQXJyE5HDgD"),
-        ("Uptown Funk – Bruno Mars", "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS"),
-        ("Sugar – Maroon 5", "https://open.spotify.com/track/55h7vJchibLdUkxdlX3fK7"),
-        ("Hokaliyo", "https://open.spotify.com/artist/535ascn4f13hFo2kjCodKE"),
-        ("Halaji Tara Fulwadi", "https://open.spotify.com/track/58kDGOUvK1foT7UGnZYaFQ"),
-        ("Kaka Bapa Na Gaam Nu", "https://open.spotify.com/track/4YigRMdxg9DJNL0rh6V1KK"),
-    ],
-
-    'neutral': [
-        ("Ilahi – Yeh Jawaani Hai Deewani", "https://open.spotify.com/track/0VxgNsSywsjapKGXvzj8RH"),
-        ("Tera Yaar Hoon Main", "https://open.spotify.com/track/3ZCTVFBt2Brf31RLEnCkWJ"),
-        ("Counting Stars – OneRepublic", "https://open.spotify.com/track/2tpWsVSb9UEmDRxAl1zhX1"),
-        ("Perfect – Ed Sheeran", "https://open.spotify.com/track/0tgVpDi06FyKpA1z0VMD4v"),
-        ("Kaka Bapa Na Gaam Nu", "https://open.spotify.com/track/3GmKe3YkJ4YuMZ1GNy9jjW"),
-        ("Gujarati Folk Mashup – RJ Dhvanit", "https://open.spotify.com/artist/7AeKpTtsd8BgYZAAGZ4s48"),
-        ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
-    ],
-
-    'fear': [
-        ("Arambha Hai Prachand", "https://open.spotify.com/track/1PZZtXR7nsNIyRcqd7UeiF"),
-        ("Namo Namo – Kedarnath", "https://open.spotify.com/track/5Fx864foKMyZtJbBiwvyBz"),
-        ("Kun Faya Kun – Rockstar", "https://open.spotify.com/track/7F8RNvTQlvbeBLeenycvN6"),
-        ("Demons – Imagine Dragons", "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a"),
-        ("Scared to Be Lonely – Dua Lipa", "https://open.spotify.com/track/3ebXMykcMXOcLeJ9xZ17XH"),
-        ("Bhuli Javu Che – Sachin–Jigar", "https://open.spotify.com/track/7s1pfz5zIMBJdYVc3bWEku"),
-        ("Kadi Aevi Yaad – Rakesh Barot", "https://open.spotify.com/track/748eQN6KCbOO1ylkwHdaXD"),
-    ],
-
-    'disgust': [
-        ("Apna Time Aayega – Gully Boy", "https://open.spotify.com/track/5FLgOuLoVwwUUF7IL36Lux"),
-        ("Sher Aaya Sher – Gully Boy", "https://open.spotify.com/track/7zT92EewVvLfiPyKSTJUT6"),
-        ("Power – Kanye West", "https://open.spotify.com/track/2gZUPNdnz5Y45eiGxpH"),
-        ("Stronger – Kanye West", "https://open.spotify.com/track/0j2T0R9dR9qdJYsB7ciXhf"),
-        ("Helo Mara Dholida", "https://open.spotify.com/track/35tJHVflwKQ8pMYV1QaiJ2"),
-        ("Baap Dhamaal – Jignesh Kaviraj", "https://open.spotify.com/album/2MhZPFL3YT4szEQQCZ8BoN"),
-    ],
-}
-
-emotion_emoji = {
-    "happy": "😄",
-    "sad": "😢",
-    "angry": "😡",
-    "surprise": "😲",
-    "neutral": "😐",
-    "fear": "😨",
-    "disgust": "🤢",
-}
 
 # ----------------------- Emotion Detection Function -----------------------
 def detect_emotion(image):
@@ -663,8 +624,6 @@ with st.sidebar:
     st.markdown(f"- [Me (Vivekkumar)]({MY_LINKEDIN_URL})")
     st.markdown(f"- [Dhruv]({DHRUV_LINKEDIN_URL})")
 
-# Removed the old language button block from the main content area
-
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ----------------------- MAIN TITLE -----------------------
@@ -684,30 +643,29 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ----------------------- TOP RIGHT CREATOR LINKS (GLOBAL PLACEMENT) -----------------------
+# ----------------------- TOP RIGHT CREATOR LINKS (RESPONSIVE PLACEMENT) -----------------------
 
-# Header spanning the two button columns (aligned to the right)
-st.markdown(
-    f'<div style="text-align: right; margin-bottom: 5px;">'
-    f'<span class="creator-connect-header">🔗 Connect with Creators</span>'
-    f'</div>',
-    unsafe_allow_html=True
-)
+# 1. Header is pushed right using columns
+header_row = st.columns([6, 3]) 
+with header_row[1]:
+    st.markdown(
+        f'<div style="text-align: right; margin-top: -1.5rem;">'
+        f'<span class="creator-connect-header">🔗 Connect with Creators</span>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
 
-# Buttons below the header
-# Adjust column widths to push content to the far right
-creator_btn_cols = st.columns([7, 1.5, 1.5]) 
-
-with creator_btn_cols[1]:
-    # Using the CSS class for the button to apply animation and glow
+# 2. Buttons are pushed right using columns
+button_row = st.columns([6, 1.5, 1.5]) 
+with button_row[1]:
     st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", use_container_width=True)
+    # use_container_width=True is added for better mobile scaling, forcing the button to fill the constrained column space
+    st.link_button("Me 🧑‍💻", MY_LINKEDIN_URL, help="Connect with Vivekkumar on LinkedIn", key="top_me_link", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-with creator_btn_cols[2]:
-    # Using the CSS class for the button to apply animation and glow
+with button_row[2]:
     st.markdown('<div class="top-right-creator-btn">', unsafe_allow_html=True)
-    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", use_container_width=True)
+    st.link_button("Dhruv 🧑‍💻", DHRUV_LINKEDIN_URL, help="Connect with Dhruv on LinkedIn", key="top_dhruv_link", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---") # Separator before the main columns start
@@ -715,7 +673,7 @@ st.markdown("---") # Separator before the main columns start
 
 
 # ----------------------- INPUT METHOD -----------------------
-col_left, col_right = st.columns([1.2, 1])
+col_left, col_right = st.columns([1.2, 1]) 
 
 with col_left:
     input_options = ["camera", "upload"]  # logical keys
@@ -767,6 +725,7 @@ with col_left:
     # ----------------------- AUTO MODE (DeepFace) -----------------------
     if uploaded_image is not None and DEEPFACE_AVAILABLE:
         img = Image.open(uploaded_image)
+        # Image component is inherently responsive
         st.image(img, caption="Your Photo", use_column_width=True)
 
         img_np = np.array(img.convert("RGB"))
@@ -831,7 +790,7 @@ with col_right:
         unsafe_allow_html=True
     )
 
-    quick_cols = st.columns(2)
+    quick_cols = st.columns(2) # These also collapse on mobile
     moods_row1 = ["happy", "sad", "angry", "neutral"]
     moods_row2 = ["surprise", "fear", "disgust"]
 
@@ -839,13 +798,15 @@ with col_right:
 
     for i, mood in enumerate(moods_row1):
         with quick_cols[i % 2]:
-            if st.button(f"{emotion_emoji[mood]} {mood.capitalize()}", key=f"quick_{mood}"):
+            # Buttons are flexible size
+            if st.button(f"{emotion_emoji[mood]} {mood.capitalize()}", key=f"quick_{mood}", use_container_width=True):
                 selected_quick_mood = mood
 
     quick_cols2 = st.columns(2)
     for i, mood in enumerate(moods_row2):
         with quick_cols2[i % 2]:
-            if st.button(f"{emotion_emoji[mood]} {mood.capitalize()}", key=f"quick2_{mood}"):
+            # Buttons are flexible size
+            if st.button(f"{emotion_emoji[mood]} {mood.capitalize()}", key=f"quick2_{mood}", use_container_width=True):
                 selected_quick_mood = mood
 
     if selected_quick_mood:
