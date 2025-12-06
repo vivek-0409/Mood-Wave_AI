@@ -350,9 +350,9 @@ st.markdown(
 )
 
 selected_emotion = st.selectbox(
-    "તમારું mood પસંદ કરો:",
+    "Choose your mood:",
     options=list(emotion_to_songs.keys()),
-    index=0,
+    index=5,
     format_func=lambda x: x.capitalize()
 )
 
