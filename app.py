@@ -5,6 +5,13 @@ import numpy as np
 import time
 
 # -------------------------------------------------------------
+# CONFIGURATION
+# -------------------------------------------------------------
+# New: Minimum confidence score (out of 100) required to display a detected emotion.
+# If confidence is below this, we show an 'ambiguous emotion' message.
+MIN_CONFIDENCE_THRESHOLD = 80.0 
+
+# -------------------------------------------------------------
 # LinkedIn URLs (New Constants)
 # -------------------------------------------------------------
 MY_LINKEDIN_URL = "https://www.linkedin.com/in/parekh-vivekkumar-gp-kheda-it-dte-03b3572b6?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B%2BFmiVhRSQcWTHq7oN7aIkA%3D%3D"
@@ -132,11 +139,17 @@ TEXT = {
         "hi": "आपका इमोशन पहचाना जा रहा है... 🔍",
         "gu": "તમારો ઈમોશન ઓળખાઈ રહ્યો છે... 🔍",
     },
-    # New face detection error message
+    # New error message 1: No face found
     "no_face_detected": {
         "en": "🚨 Face Not Detected! Please adjust your position, ensure your face is clearly visible, and try again.",
         "hi": "🚨 चेहरा नहीं पहचाना गया! कृपया अपनी पोज़िशन बदलें, सुनिश्चित करें कि आपका चेहरा स्पष्ट रूप से दिखाई दे रहा है, और फिर से प्रयास करें।",
         "gu": "🚨 ચહેરો ઓળખાયો નથી! કૃપા કરીને તમારી સ્થિતિ બદલો, ખાતરી કરો કે તમારો ચહેરો સ્પષ્ટ રીતે દેખાય છે, અને ફરી પ્રયાસ કરો.",
+    },
+    # New error message 2: Face found, but confidence is too low (< 80%)
+    "ambiguous_emotion": {
+        "en": "🤔 Ambiguous Emotion Detected! Your mood is too subtle. Please try again with a clearer expression to get the perfect song match!",
+        "hi": "🤔 अस्पष्ट इमोशन! आपका मूड बहुत सूक्ष्म है। कृपया सही गाना पाने के लिए एक स्पष्ट अभिव्यक्ति के साथ फिर से प्रयास करें!",
+        "gu": "🤔 અસ્પષ્ટ ઈમોશન! તમારો મૂડ સ્પષ્ટ નથી. કૃપા કરીને યોગ્ય ગીત મેળવવા માટે સ્પષ્ટ અભિવ્યક્તિ સાથે ફરી પ્રયાસ કરો!",
     },
     "closing_message": { # New closing message
         "en": "Thank you for visiting MoodWave AI! What's your current vibe? 😄🎶 Try another picture or pick a mood! 💖",
@@ -233,6 +246,7 @@ def detect_emotion(image):
     """
     Returns (dominant_emotion, confidence_percent) or (None, None) on failure.
     Returns ("no_face", None) if face is not detected (enforce_detection=True).
+    Returns ("ambiguous", confidence) if confidence is below MIN_CONFIDENCE_THRESHOLD.
     """
     if not DEEPFACE_AVAILABLE:
         st.error("DeepFace (or its dependencies) could not be loaded. Please check your environment.")
@@ -242,22 +256,23 @@ def detect_emotion(image):
         result = DeepFace.analyze(
             img_path=image,
             actions=['emotion'],
-            enforce_detection=True # Set to True to enforce face detection (as requested)
+            enforce_detection=True # Set to True to enforce face detection
         )
-        # DeepFace returns a list in newer versions
+        
         r0 = result[0] if isinstance(result, list) else result
         dominant = r0.get('dominant_emotion', None)
         confidence = None
         
-        # --- (Optional) Minimal Bounding Box Check: checks if face is too small ---
-        # This is an approximation for "80% dikhe" / clear visibility
-        # However, enforcing detection is usually sufficient.
-        
         if dominant and 'emotion' in r0 and isinstance(r0['emotion'], dict):
-            # score for that emotion
+            # score for that emotion (DeepFace returns 0-100 score here)
             score = r0['emotion'].get(dominant)
             if score is not None:
                 confidence = float(score)
+        
+        # New Confidence Check: If face is detected but confidence is low
+        if confidence is not None and confidence < MIN_CONFIDENCE_THRESHOLD:
+             # Use "ambiguous" flag for low confidence
+             return "ambiguous", confidence 
         
         return dominant, confidence
     
@@ -530,6 +545,7 @@ st.markdown(
     }
     
     /* ---------------------- NEW FACE DETECTION ERROR STYLING ---------------------- */
+    /* Used for both 'No Face Detected' and 'Ambiguous Emotion' */
     .face-error-pop {
         background: linear-gradient(135deg, #ef4444, #dc2626); /* Red gradient */
         color: white;
@@ -747,9 +763,9 @@ with col_left:
             time.sleep(1.3)  # smooth animation
             detected_emotion, detected_confidence = detect_emotion(img_np)
         
-        # --- NEW: FACE DETECTION CHECK AND ERROR POP-UP ---
+        # --- NEW: FACE DETECTION AND CONFIDENCE CHECK ---
         if detected_emotion == "no_face":
-            # Display the custom animated error message
+            # Error 1: No face found
             st.markdown(
                 f"""
                 <div class="face-error-pop">
@@ -760,19 +776,30 @@ with col_left:
             )
             detected_emotion = None # Reset to prevent song list from showing
             detected_confidence = None
+        elif detected_emotion == "ambiguous":
+            # Error 2: Face found, but confidence is low (new check)
+            st.markdown(
+                f"""
+                <div class="face-error-pop" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    {L('ambiguous_emotion')}
+                    <br><small>(Confidence: {detected_confidence:.1f}%)</small>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            detected_emotion = None # Reset to prevent song list from showing
+            detected_confidence = None
         # --- END NEW CHECK ---
             
     # show auto-detected songs (only if emotion is detected, i.e., not None)
-    if detected_emotion and detected_emotion != "no_face":
+    if detected_emotion and detected_emotion not in ["no_face", "ambiguous"]:
         emo_key = detected_emotion.lower()
         emo_icon = emotion_emoji.get(emo_key, "🎭")
 
         conf_str = ""
         if detected_confidence is not None:
-            if detected_confidence > 1:
-                conf_str = f"{detected_confidence:.1f}%"
-            else:
-                conf_str = f"{detected_confidence*100:.1f}%"
+            conf_str = f"{detected_confidence:.1f}%"
+        
         chip_text = f"{emo_key.upper()}"
         if conf_str:
             chip_text += f" · {conf_str}"
