@@ -5,13 +5,6 @@ import numpy as np
 import time
 
 # -------------------------------------------------------------
-# CONFIGURATION
-# -------------------------------------------------------------
-# New: Minimum confidence score (out of 100) required to display a detected emotion.
-# If confidence is below this, we show an 'ambiguous emotion' message.
-MIN_CONFIDENCE_THRESHOLD = 80.0 
-
-# -------------------------------------------------------------
 # LinkedIn URLs (New Constants)
 # -------------------------------------------------------------
 MY_LINKEDIN_URL = "https://www.linkedin.com/in/parekh-vivekkumar-gp-kheda-it-dte-03b3572b6?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B%2BFmiVhRSQcWTHq7oN7aIkA%3D%3D"
@@ -125,9 +118,9 @@ TEXT = {
         "gu": "📁 એક ફોટો અપલોડ કરો",
     },
     "manual_hint": {
-        "en": "If detection fails, choose a mood and explore songs manually.",
-        "hi": "अगर डिटेक्शन फेल हो जाए, तो मूड चुनें और मैन्युअली गाने देखें।",
-        "gu": "જો ડિટેક્શન નિષ્ફળ જાય, તો મૂડ પસંદ કરો અને મેન્યુઅલી ગીતો જુઓ。",
+        "en": "If camera / detection fails, choose a mood and explore songs manually.",
+        "hi": "अगर कैमरा / डिटेक्शन फेल हो जाए, तो मूड चुनें और मैन्युअली गाने देखें।",
+        "gu": "જો કેમેરા / ડિટેક્શન નિષ્ફળ જાય, તો મૂડ પસંદ કરો અને મેન્યુઅલી ગીતો જુઓ。",
     },
     "quick_mood_title": {
         "en": "🎧 Quick Mood Shortcuts (Manual Mood Selection)",
@@ -138,18 +131,6 @@ TEXT = {
         "en": "Detecting your emotion... 🔍",
         "hi": "आपका इमोशन पहचाना जा रहा है... 🔍",
         "gu": "તમારો ઈમોશન ઓળખાઈ રહ્યો છે... 🔍",
-    },
-    # New error message 1: No face found
-    "no_face_detected": {
-        "en": "🚨 Face Not Detected! Please adjust your position, ensure your face is clearly visible, and try again.",
-        "hi": "🚨 चेहरा नहीं पहचाना गया! कृपया अपनी पोज़िशन बदलें, सुनिश्चित करें कि आपका चेहरा स्पष्ट रूप से दिखाई दे रहा है, और फिर से प्रयास करें।",
-        "gu": "🚨 ચહેરો ઓળખાયો નથી! કૃપા કરીને તમારી સ્થિતિ બદલો, ખાતરી કરો કે તમારો ચહેરો સ્પષ્ટ રીતે દેખાય છે, અને ફરી પ્રયાસ કરો.",
-    },
-    # New error message 2: Face found, but confidence is too low (< 80%)
-    "ambiguous_emotion": {
-        "en": "🤔 Ambiguous Emotion Detected! Your mood is too subtle. Please try again with a clearer expression to get the perfect song match!",
-        "hi": "🤔 अस्पष्ट इमोशन! आपका मूड बहुत सूक्ष्म है। कृपया सही गाना पाने के लिए एक स्पष्ट अभिव्यक्ति के साथ फिर से प्रयास करें!",
-        "gu": "🤔 અસ્પષ્ટ ઈમોશન! તમારો મૂડ સ્પષ્ટ નથી. કૃપા કરીને યોગ્ય ગીત મેળવવા માટે સ્પષ્ટ અભિવ્યક્તિ સાથે ફરી પ્રયાસ કરો!",
     },
     "closing_message": { # New closing message
         "en": "Thank you for visiting MoodWave AI! What's your current vibe? 😄🎶 Try another picture or pick a mood! 💖",
@@ -241,12 +222,10 @@ emotion_emoji = {
     "disgust": "🤢",
 }
 
-# ----------------------- Emotion Detection Function (MODIFIED) -----------------------
+# ----------------------- Emotion Detection Function -----------------------
 def detect_emotion(image):
     """
     Returns (dominant_emotion, confidence_percent) or (None, None) on failure.
-    Returns ("no_face", None) if face is not detected (enforce_detection=True).
-    Returns ("ambiguous", confidence) if confidence is below MIN_CONFIDENCE_THRESHOLD.
     """
     if not DEEPFACE_AVAILABLE:
         st.error("DeepFace (or its dependencies) could not be loaded. Please check your environment.")
@@ -256,39 +235,23 @@ def detect_emotion(image):
         result = DeepFace.analyze(
             img_path=image,
             actions=['emotion'],
-            enforce_detection=True # Set to True to enforce face detection
+            enforce_detection=False
         )
-        
+        # DeepFace returns a list in newer versions
         r0 = result[0] if isinstance(result, list) else result
         dominant = r0.get('dominant_emotion', None)
         confidence = None
-        
         if dominant and 'emotion' in r0 and isinstance(r0['emotion'], dict):
-            # score for that emotion (DeepFace returns 0-100 score here)
+            # score for that emotion
             score = r0['emotion'].get(dominant)
             if score is not None:
                 confidence = float(score)
-        
-        # New Confidence Check: If face is detected but confidence is low
-        if confidence is not None and confidence < MIN_CONFIDENCE_THRESHOLD:
-             # Use "ambiguous" flag for low confidence
-             return "ambiguous", confidence 
-        
         return dominant, confidence
-    
-    except ValueError as e:
-        # DeepFace raises ValueError if enforce_detection=True and no face is found
-        if "Face could not be detected" in str(e) or "No faces were found" in str(e):
-            return "no_face", None # Custom error flag for face absence
-        # Handle other ValueErrors
-        st.error(f"Error analyzing image: {e}")
-        return None, None
-        
     except Exception as e:
-        st.error(f"General error detecting emotion: {e}")
+        st.error(f"Error detecting emotion: {e}")
         return None, None
 
-# ----------------------- Custom CSS (UPDATED with face-error-pop) -----------------------
+# ----------------------- Custom CSS (Updated for Creator Buttons) -----------------------
 st.markdown(
     """
     <style>
@@ -366,7 +329,7 @@ st.markdown(
         0% { opacity: 0; transform: translateY(20px); }
         100% { opacity: 1; transform: translateY(0); }
     }
-    
+
     /* Song Card List Item (MODIFIED FOR ANIMATION) */
     .song-card {
         margin-bottom: 0.6rem;
@@ -544,28 +507,6 @@ st.markdown(
         border: 1px solid rgba(250,204,21, 0.3);
     }
     
-    /* ---------------------- NEW FACE DETECTION ERROR STYLING ---------------------- */
-    /* Used for both 'No Face Detected' and 'Ambiguous Emotion' */
-    .face-error-pop {
-        background: linear-gradient(135deg, #ef4444, #dc2626); /* Red gradient */
-        color: white;
-        font-size: 1.1rem;
-        font-weight: 700;
-        padding: 1rem;
-        border-radius: 12px;
-        box-shadow: 0 0 25px rgba(220, 38, 38, 0.7);
-        margin-top: 1.5rem;
-        text-align: center;
-        border: 3px solid #fca5a5;
-        animation: popError 0.3s ease-out; /* Pop-in animation */
-    }
-
-    @keyframes popError {
-        0% { transform: scale(0.8); opacity: 0; }
-        80% { transform: scale(1.05); opacity: 1; }
-        100% { transform: scale(1); }
-    }
-    
     /* ---------------------- CREATOR BUTTON STYLING (TOP RIGHT - UPDATED) ---------------------- */
     
     .creator-connect-header {
@@ -617,6 +558,34 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# ----------------------- Emotion Detection Function -----------------------
+def detect_emotion(image):
+    """
+    Returns (dominant_emotion, confidence_percent) or (None, None) on failure.
+    """
+    if not DEEPFACE_AVAILABLE:
+        st.error("DeepFace (or its dependencies) could not be loaded. Please check your environment.")
+        return None, None
+
+    try:
+        result = DeepFace.analyze(
+            img_path=image,
+            actions=['emotion'],
+            enforce_detection=False
+        )
+        # DeepFace returns a list in newer versions
+        r0 = result[0] if isinstance(result, list) else result
+        dominant = r0.get('dominant_emotion', None)
+        confidence = None
+        if dominant and 'emotion' in r0 and isinstance(r0['emotion'], dict):
+            # score for that emotion
+            score = r0['emotion'].get(dominant)
+            if score is not None:
+                confidence = float(score)
+        return dominant, confidence
+    except Exception as e:
+        st.error(f"Error detecting emotion: {e}")
+        return None, None
 
 # ----------------------- SIDEBAR -----------------------
 with st.sidebar:
@@ -686,15 +655,15 @@ with header_row[1]:
         unsafe_allow_html=True
     )
 
-# 2. Buttons are pushed right using columns
+# 2. Buttons are pushed right using columns (fixed error by using HTML anchor tags)
 # Use a slightly smaller empty column to constrain buttons better on desktop
 button_row = st.columns([7, 1.2, 1.2]) 
 with button_row[1]:
-    # Changed st.link_button to custom HTML anchor tag for stability
+    # Custom HTML anchor tag replaces st.link_button to avoid TypeError in complex column layout
     st.markdown(f'<a href="{MY_LINKEDIN_URL}" target="_blank" class="custom-link-btn">Me 🧑‍💻</a>', unsafe_allow_html=True)
     
 with button_row[2]:
-    # Changed st.link_button to custom HTML anchor tag for stability
+    # Custom HTML anchor tag replaces st.link_button to avoid TypeError in complex column layout
     st.markdown(f'<a href="{DHRUV_LINKEDIN_URL}" target="_blank" class="custom-link-btn">Dhruv 🧑‍💻</a>', unsafe_allow_html=True)
 
 st.markdown("---") # Separator before the main columns start
@@ -762,44 +731,18 @@ with col_left:
         with st.spinner(L("detect_spinner")):
             time.sleep(1.3)  # smooth animation
             detected_emotion, detected_confidence = detect_emotion(img_np)
-        
-        # --- NEW: FACE DETECTION AND CONFIDENCE CHECK ---
-        if detected_emotion == "no_face":
-            # Error 1: No face found
-            st.markdown(
-                f"""
-                <div class="face-error-pop">
-                    {L('no_face_detected')}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            detected_emotion = None # Reset to prevent song list from showing
-            detected_confidence = None
-        elif detected_emotion == "ambiguous":
-            # Error 2: Face found, but confidence is low (new check)
-            st.markdown(
-                f"""
-                <div class="face-error-pop" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    {L('ambiguous_emotion')}
-                    <br><small>(Confidence: {detected_confidence:.1f}%)</small>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            detected_emotion = None # Reset to prevent song list from showing
-            detected_confidence = None
-        # --- END NEW CHECK ---
-            
-    # show auto-detected songs (only if emotion is detected, i.e., not None)
-    if detected_emotion and detected_emotion not in ["no_face", "ambiguous"]:
+
+    # show auto-detected songs
+    if detected_emotion:
         emo_key = detected_emotion.lower()
         emo_icon = emotion_emoji.get(emo_key, "🎭")
 
         conf_str = ""
         if detected_confidence is not None:
-            conf_str = f"{detected_confidence:.1f}%"
-        
+            if detected_confidence > 1:
+                conf_str = f"{detected_confidence:.1f}%"
+            else:
+                conf_str = f"{detected_confidence*100:.1f}%"
         chip_text = f"{emo_key.upper()}"
         if conf_str:
             chip_text += f" · {conf_str}"
