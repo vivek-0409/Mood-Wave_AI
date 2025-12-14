@@ -1,7 +1,7 @@
 🎭 MoodWave AI
 
 **🔗 Live App
-👉 https://mood-waveai-ewquxrtjmhu6am69wjlsgw.streamlit.app/** :- **https://face-detection-usingdeepfaceappv-gued7rb7cpjsoesujwaqmb.streamlit.app/**
+👉 https://mood-waveai-ewquxrtjmhu6am69wjlsgw.streamlit.app/** 
 
 AI-Powered Emotion-Based Music Recommendation System
 
@@ -9,7 +9,7 @@ MoodWave AI is an intelligent web application that detects human emotions from f
 It bridges the gap between human emotions and AI-driven personalization using Computer Vision and Deep Learning.
 
 
-💻 GitHub Repository
+##💻 GitHub Repository
 👉 https://github.com/vivek-0409/Mood-Wave_AI
 
 🚀 Features
